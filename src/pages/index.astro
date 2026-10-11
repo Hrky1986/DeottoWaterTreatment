@@ -3,6 +3,7 @@
 // (local preview, GitHub Pages, any static host). On Cloudflare Pages,
 // functions/index.js answers "/" first and redirects by IP country.
 const site = Astro.site!;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <!doctype html>
 <html lang="hr">
@@ -11,13 +12,13 @@ const site = Astro.site!;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Ivan Deotto – obrada vode / water treatment</title>
     <meta name="robots" content="noindex" />
-    <link rel="alternate" hreflang="hr" href={new URL('/hr/', site).href} />
-    <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script is:inline>
+    <link rel="alternate" hreflang="hr" href={new URL(`${base}hr/`, site).href} />
+    <link rel="alternate" hreflang="en" href={new URL(`${base}en/`, site).href} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <script is:inline define:vars={{ base }}>
       (function () {
         var lang = null;
-        try { lang = localStorage.getItem('lang'); } catch (e) {}
+        try { lang = localStorage.getItem('deotto-lang'); } catch (e) {}
         if (!lang) { var m = document.cookie.match(/(?:^|; )lang=(hr|en)/); if (m) lang = m[1]; }
         if (lang !== 'hr' && lang !== 'en') {
           // No IP lookup is possible here, so approximate Croatia by time zone or browser language.
@@ -27,7 +28,7 @@ const site = Astro.site!;
           var hr = tz === 'Europe/Zagreb' || langs.some(function (l) { return /^hr\b/i.test(l); });
           lang = hr ? 'hr' : 'en';
         }
-        location.replace('/' + lang + '/' + location.hash);
+        location.replace(base + lang + '/' + location.hash);
       })();
     </script>
     <style>
@@ -36,6 +37,6 @@ const site = Astro.site!;
     </style>
   </head>
   <body>
-    <p><a href="/hr/" lang="hr">Hrvatski</a> <a href="/en/" lang="en">English</a></p>
+    <p><a href={`${base}hr/`} lang="hr">Hrvatski</a> <a href={`${base}en/`} lang="en">English</a></p>
   </body>
 </html>

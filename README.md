@@ -25,6 +25,15 @@ npm run dev      # http://localhost:4321
 npm run build    # output in dist/
 ```
 
+## Preview on GitHub Pages
+
+Every push to `main` runs `.github/workflows/deploy-pages.yml` and publishes the site to
+https://hrky1986.github.io/DeottoWaterTreatment/. The workflow sets `SITE` and `BASE_PATH`
+so links work under the `/DeottoWaterTreatment/` subpath. GitHub Pages cannot run the
+IP-based redirect, so `/` uses the time zone / browser language fallback there.
+
+One-time setup: repository Settings → Pages → Source: **GitHub Actions**.
+
 ## Deploy to Cloudflare Pages
 
 Connect the GitHub repository in the Cloudflare dashboard with:
