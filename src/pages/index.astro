@@ -1,0 +1,41 @@
+---
+// Fallback for "/" when the site is served without the edge function
+// (local preview, GitHub Pages, any static host). On Cloudflare Pages,
+// functions/index.js answers "/" first and redirects by IP country.
+const site = Astro.site!;
+---
+<!doctype html>
+<html lang="hr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ivan Deotto – obrada vode / water treatment</title>
+    <meta name="robots" content="noindex" />
+    <link rel="alternate" hreflang="hr" href={new URL('/hr/', site).href} />
+    <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (function () {
+        var lang = null;
+        try { lang = localStorage.getItem('lang'); } catch (e) {}
+        if (!lang) { var m = document.cookie.match(/(?:^|; )lang=(hr|en)/); if (m) lang = m[1]; }
+        if (lang !== 'hr' && lang !== 'en') {
+          // No IP lookup is possible here, so approximate Croatia by time zone or browser language.
+          var tz = '';
+          try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+          var langs = navigator.languages || [navigator.language || ''];
+          var hr = tz === 'Europe/Zagreb' || langs.some(function (l) { return /^hr\b/i.test(l); });
+          lang = hr ? 'hr' : 'en';
+        }
+        location.replace('/' + lang + '/' + location.hash);
+      })();
+    </script>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; font: 1.1rem/1.5 system-ui, sans-serif; background: #0f3a43; color: #e6f0ee; }
+      a { color: #6fd6cf; margin: 0 0.75rem; }
+    </style>
+  </head>
+  <body>
+    <p><a href="/hr/" lang="hr">Hrvatski</a> <a href="/en/" lang="en">English</a></p>
+  </body>
+</html>

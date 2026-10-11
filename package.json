@@ -1,0 +1,20 @@
+{
+  "name": "deotto-water-treatment",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Website for Ivan Deotto, water treatment consultant (HR/EN).",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hrky1986/DeottoWaterTreatment.git"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "astro": "^7.3.8"
+  }
+}
