@@ -3,21 +3,12 @@
 
 export type Lang = 'hr' | 'en';
 
-export interface Problem {
-  id: string;
-  label: string;
-  title: string;
-  cause: string;
-  limit: string;
-  fixes: string[];
-  help: string;
-}
-
 export interface Content {
   lang: Lang;
-  meta: { title: string; description: string };
+  meta: { title: string; description: string; ogAlt: string };
   skip: string;
-  nav: { problems: string; services: string; process: string; rules: string; faq: string; contact: string };
+  menu: { open: string; close: string; label: string };
+  nav: { services: string; process: string; rules: string; faq: string; contact: string };
   langSwitch: { label: string; other: string; otherName: string };
   hero: {
     name: string;
@@ -25,16 +16,7 @@ export interface Content {
     headline: string;
     lede: string;
     ctaPrimary: string;
-    ctaSecondary: string;
-    sheetTitle: string;
-    sheetSource: string;
-    sheetLimit: string;
-    sheetOver: string;
-    sheetOk: string;
-    sheetNote: string;
-    rows: { name: string; value: number; limit: number; unit: string }[];
   };
-  problems: { heading: string; intro: string; causeLabel: string; limitLabel: string; fixesLabel: string; helpLabel: string; items: Problem[] };
   services: { heading: string; intro: string; groups: { title: string; who: string; items: string[] }[] };
   process: { heading: string; intro: string; steps: { title: string; text: string }[] };
   rules: {
@@ -79,12 +61,14 @@ export const content: Record<Lang, Content> = {
   hr: {
     lang: 'hr',
     meta: {
-      title: 'Ivan Deotto – savjetnik za obradu vode',
+      title: 'Obrada i pročišćavanje vode – savjetnik Ivan Deotto',
       description:
-        'Analiza vode, odabir uređaja za pročišćavanje, bunari, kamenac, željezo, arsen i Legionella. Savjetovanje za kućanstva, turizam, ugostiteljstvo i industriju u Hrvatskoj.',
+        'Analiza vode, omekšivači, filtri za željezo i arsen, UV za bunare i procjena rizika od Legionelle za apartmane i hotele. Savjetovanje u cijeloj Hrvatskoj.',
+      ogAlt: 'Ivan Deotto, savjetnik za obradu vode',
     },
     skip: 'Preskoči na sadržaj',
-    nav: { problems: 'Problemi', services: 'Usluge', process: 'Kako radim', rules: 'Propisi', faq: 'Pitanja', contact: 'Kontakt' },
+    menu: { open: 'Otvori izbornik', close: 'Zatvori izbornik', label: 'Izbornik' },
+    nav: { services: 'Usluge', process: 'Kako radim', rules: 'Propisi', faq: 'Pitanja', contact: 'Kontakt' },
     langSwitch: { label: 'Jezik', other: 'EN', otherName: 'English' },
     hero: {
       name: 'Ivan Deotto',
@@ -93,114 +77,6 @@ export const content: Record<Lang, Content> = {
       lede:
         'Pomažem kućanstvima, iznajmljivačima, ugostiteljima i tvrtkama protumačiti analizu vode i odabrati obradu koja rješava stvarni problem, bez kupnje opreme koja vam ne treba.',
       ctaPrimary: 'Dogovorite procjenu vode',
-      ctaSecondary: 'Pronađite svoj problem',
-      sheetTitle: 'Primjer analize bunarske vode',
-      sheetSource: 'istočna Slavonija',
-      sheetLimit: 'MDK',
-      sheetOver: 'iznad dopuštenog',
-      sheetOk: 'u granicama',
-      sheetNote: 'Ilustrativne vrijednosti. Granice prema NN 64/2023.',
-      rows: [
-        { name: 'Arsen', value: 24, limit: 10, unit: 'µg/l' },
-        { name: 'Željezo', value: 340, limit: 200, unit: 'µg/l' },
-        { name: 'Mangan', value: 31, limit: 50, unit: 'µg/l' },
-        { name: 'Nitrati', value: 18, limit: 50, unit: 'mg/l' },
-      ],
-    },
-    problems: {
-      heading: 'Što primjećujete na vodi?',
-      intro: 'Odaberite ono što vas muči. Vidjet ćete najčešći uzrok, što kaže propis i koje vrste obrade dolaze u obzir.',
-      causeLabel: 'Najčešći uzrok',
-      limitLabel: 'Što kaže propis',
-      fixesLabel: 'Moguća rješenja',
-      helpLabel: 'Kako vam pomažem',
-      items: [
-        {
-          id: 'kamenac',
-          label: 'Kamenac na slavinama i aparatima',
-          title: 'Tvrda voda',
-          cause:
-            'Kalcij i magnezij otopljeni iz vapnenca. Velik dio Hrvatske, osobito krš i Panonska nizina, ima tvrdu vodu. Kamenac skraćuje vijek bojlera, perilica i aparata za kavu i povećava potrošnju energije.',
-          limit:
-            'Tvrdoća nije zdravstveni problem i propis za nju ne određuje MDK. Procjenjuje se prema preporukama Svjetske zdravstvene organizacije.',
-          fixes: [
-            'Ionski omekšivač za cijelu kuću ili samo za toplu vodu',
-            'Djelomično omekšavanje, da voda zadrži dio minerala',
-            'Dozirni uređaji protiv kamenca za bojlere i kotlove',
-          ],
-          help: 'Izmjerim tvrdoću i potrošnju, dimenzioniram omekšivač i pazim da se voda ne omekša previše, jer premeka voda nagriza cijevi.',
-        },
-        {
-          id: 'zeljezo',
-          label: 'Smeđe mrlje i metalni okus',
-          title: 'Željezo i mangan',
-          cause:
-            'Česti u bunarskoj i podzemnoj vodi. Voda iz slavine može biti bistra, a nakon stajanja požuti i ostavlja hrđaste ili crne mrlje na sanitarijama i rublju.',
-          limit: 'MDK za željezo je 200 µg/l, a za mangan 50 µg/l (indikatorski parametri).',
-          fixes: [
-            'Oksidacija i filtracija kroz katalitičku ispunu',
-            'Aeracija za veće koncentracije',
-            'Kloriranje ili ozon prije filtra kad su prisutne i bakterije željeza',
-          ],
-          help: 'Uz željezo provjerim pH, kisik i amonij. O njima ovisi koja će metoda raditi, pa ne kupujete filtar koji se začepi za mjesec dana.',
-        },
-        {
-          id: 'miris',
-          label: 'Miris po pokvarenim jajima ili kloru',
-          title: 'Sumporovodik ili nusprodukti dezinfekcije',
-          cause:
-            'Miris po jajima obično je sumporovodik iz podzemne vode ili bakterije u bojleru. Izražen okus klora potječe od dezinfekcije u javnoj vodoopskrbi.',
-          limit: 'Miris i okus moraju biti prihvatljivi potrošačima i bez neuobičajenih promjena.',
-          fixes: [
-            'Aeracija ili oksidacija sumporovodika',
-            'Filtar s aktivnim ugljenom na mjestu potrošnje',
-            'Dezinfekcija i servis bojlera kad miris dolazi samo iz tople vode',
-          ],
-          help: 'Utvrdim dolazi li miris iz izvora, mreže ili bojlera. Ako je samo u toploj vodi, filtar na ulazu ga neće ukloniti.',
-        },
-        {
-          id: 'bunar',
-          label: 'Imam vlastiti bunar ili izvor',
-          title: 'Bakterije i nitrati u bunaru',
-          cause:
-            'Bunari su izloženi oborinskoj vodi, septičkim jamama i gnojidbi. Nakon jakih kiša ili poplava mikrobiološka kvaliteta se može naglo pogoršati.',
-          limit: 'E. coli i enterokoki: 0 u 100 ml. Nitrati: 50 mg/l, nitriti: 0,50 mg/l.',
-          fixes: [
-            'Zaštita glave bunara i udaljenost od izvora onečišćenja',
-            'UV dezinfekcija s predfiltracijom',
-            'Selektivna ionska izmjena ili reverzna osmoza za nitrate',
-          ],
-          help: 'Sastavim plan uzorkovanja, protumačim nalaz laboratorija i predložim redoslijed obrade. UV uređaj ne radi ako je voda mutna ili puna željeza.',
-        },
-        {
-          id: 'arsen',
-          label: 'Arsen u vodi',
-          title: 'Prirodni arsen u podzemnoj vodi',
-          cause:
-            'U istočnoj Slavoniji arsen prirodno potječe iz stijena i tla vodonosnika. Nema boje, okusa ni mirisa, pa se otkriva samo analizom.',
-          limit: 'MDK za arsen je 10 µg/l.',
-          fixes: [
-            'Adsorpcija na ispunama na bazi željeza',
-            'Reverzna osmoza za vodu za piće i kuhanje',
-            'Priključak na javnu vodoopskrbu gdje je dostupna',
-          ],
-          help: 'Pomažem odabrati između adsorpcije i reverzne osmoze, odrediti kad mijenjati ispunu i provjeriti radi li uređaj nakon ugradnje.',
-        },
-        {
-          id: 'legionela',
-          label: 'Apartmani, hoteli i topla voda',
-          title: 'Legionella u sustavima tople vode',
-          cause:
-            'Legionella se razmnožava u vodi od 25 do 50 °C, u bojlerima, rijetko korištenim tušama i dugim cijevima. Prenosi se udisanjem kapljica pod tušem.',
-          limit: 'U objektima od javnozdravstvenog interesa: manje od 1 000 CFU/l na mjestu potrošnje (NN 64/2023).',
-          fixes: [
-            'Topla voda iznad 60 °C u spremniku i barem 50 °C na slavinama',
-            'Redovito ispiranje rijetko korištenih izljeva',
-            'Termička ili kemijska dezinfekcija i uklanjanje slijepih vodova',
-          ],
-          help: 'Izradim procjenu rizika unutarnje mreže, plan uzorkovanja i upute za osoblje, i pripremim dokumentaciju za inspekciju prije sezone.',
-        },
-      ],
     },
     services: {
       heading: 'Usluge',
@@ -313,12 +189,14 @@ export const content: Record<Lang, Content> = {
   en: {
     lang: 'en',
     meta: {
-      title: 'Ivan Deotto – water treatment consultant',
+      title: 'Water treatment consultant in Croatia – Ivan Deotto',
       description:
-        'Water analysis, treatment system selection, private wells, limescale, iron, arsenic and Legionella. Consulting for homes, tourism, hospitality and industry in Croatia.',
+        'Water analysis, softeners, iron and arsenic filters, UV for private wells and Legionella risk assessment for rentals and hotels. Consulting across Croatia.',
+      ogAlt: 'Ivan Deotto, water treatment consultant',
     },
     skip: 'Skip to content',
-    nav: { problems: 'Problems', services: 'Services', process: 'How I work', rules: 'Regulations', faq: 'FAQ', contact: 'Contact' },
+    menu: { open: 'Open menu', close: 'Close menu', label: 'Menu' },
+    nav: { services: 'Services', process: 'How I work', rules: 'Regulations', faq: 'FAQ', contact: 'Contact' },
     langSwitch: { label: 'Language', other: 'HR', otherName: 'Hrvatski' },
     hero: {
       name: 'Ivan Deotto',
@@ -327,89 +205,6 @@ export const content: Record<Lang, Content> = {
       lede:
         'I help households, holiday rental owners, restaurants and companies read their water analysis and choose treatment that solves the actual problem, without buying equipment they do not need.',
       ctaPrimary: 'Book a water assessment',
-      ctaSecondary: 'Find your water problem',
-      sheetTitle: 'Example well water analysis',
-      sheetSource: 'eastern Slavonia',
-      sheetLimit: 'limit',
-      sheetOver: 'over the limit',
-      sheetOk: 'within limit',
-      sheetNote: 'Illustrative values. Limits from Croatian regulation NN 64/2023.',
-      rows: [
-        { name: 'Arsenic', value: 24, limit: 10, unit: 'µg/l' },
-        { name: 'Iron', value: 340, limit: 200, unit: 'µg/l' },
-        { name: 'Manganese', value: 31, limit: 50, unit: 'µg/l' },
-        { name: 'Nitrate', value: 18, limit: 50, unit: 'mg/l' },
-      ],
-    },
-    problems: {
-      heading: 'What are you noticing in your water?',
-      intro: 'Pick what is bothering you. You will see the most likely cause, what the regulation says and which kinds of treatment can help.',
-      causeLabel: 'Most likely cause',
-      limitLabel: 'What the regulation says',
-      fixesLabel: 'Possible solutions',
-      helpLabel: 'How I help',
-      items: [
-        {
-          id: 'limescale',
-          label: 'Limescale on taps and appliances',
-          title: 'Hard water',
-          cause:
-            'Calcium and magnesium dissolved from limestone. Much of Croatia, especially the karst and the Pannonian plain, has hard water. Scale shortens the life of water heaters, washing machines and coffee machines and raises energy use.',
-          limit: 'Hardness is not a health issue and has no legal maximum. It is assessed against World Health Organization guidance.',
-          fixes: ['Ion-exchange softener for the whole house or hot water only', 'Partial softening so the water keeps some minerals', 'Anti-scale dosing for water heaters and boilers'],
-          help: 'I measure hardness and consumption, size the softener and make sure the water is not over-softened, because very soft water corrodes pipes.',
-        },
-        {
-          id: 'iron',
-          label: 'Brown stains and a metallic taste',
-          title: 'Iron and manganese',
-          cause:
-            'Common in well and groundwater. Water can come out clear, then turn yellow after standing and leave rust or black stains on sanitary ware and laundry.',
-          limit: 'Limit is 200 µg/l for iron and 50 µg/l for manganese (indicator parameters).',
-          fixes: ['Oxidation and filtration through catalytic media', 'Aeration for higher concentrations', 'Chlorine or ozone before the filter when iron bacteria are present'],
-          help: 'Along with iron I check pH, oxygen and ammonium. They decide which method will work, so you do not buy a filter that clogs within a month.',
-        },
-        {
-          id: 'odour',
-          label: 'Smell of rotten eggs or chlorine',
-          title: 'Hydrogen sulphide or disinfection by-products',
-          cause:
-            'A rotten egg smell is usually hydrogen sulphide from groundwater or bacteria in the water heater. A strong chlorine taste comes from disinfection in the public supply.',
-          limit: 'Odour and taste must be acceptable to consumers with no abnormal change.',
-          fixes: ['Aeration or oxidation of hydrogen sulphide', 'Activated carbon filter at the point of use', 'Disinfecting and servicing the water heater when only hot water smells'],
-          help: 'I find out whether the smell comes from the source, the pipes or the heater. If it is only in hot water, a filter on the inlet will not remove it.',
-        },
-        {
-          id: 'well',
-          label: 'I have my own well or spring',
-          title: 'Bacteria and nitrate in wells',
-          cause:
-            'Wells are exposed to surface runoff, septic tanks and fertiliser. After heavy rain or flooding the microbiological quality can drop sharply.',
-          limit: 'E. coli and enterococci: 0 per 100 ml. Nitrate: 50 mg/l, nitrite: 0.50 mg/l.',
-          fixes: ['Protecting the wellhead and distance from pollution sources', 'UV disinfection with pre-filtration', 'Nitrate-selective ion exchange or reverse osmosis'],
-          help: 'I put together a sampling plan, interpret the lab report and propose the order of treatment steps. A UV unit does not work if the water is cloudy or full of iron.',
-        },
-        {
-          id: 'arsenic',
-          label: 'Arsenic in water',
-          title: 'Natural arsenic in groundwater',
-          cause:
-            'In eastern Slavonia arsenic comes naturally from the rocks and soil of the aquifer. It has no colour, taste or smell, so only an analysis can detect it.',
-          limit: 'Limit for arsenic is 10 µg/l.',
-          fixes: ['Adsorption on iron-based media', 'Reverse osmosis for drinking and cooking water', 'Connection to the public supply where available'],
-          help: 'I help you choose between adsorption and reverse osmosis, set a media replacement schedule and check that the system works after installation.',
-        },
-        {
-          id: 'legionella',
-          label: 'Holiday rentals, hotels and hot water',
-          title: 'Legionella in hot water systems',
-          cause:
-            'Legionella multiplies in water between 25 and 50 °C: in water heaters, rarely used showers and long pipe runs. It spreads by inhaling droplets in the shower.',
-          limit: 'In premises of public health interest: below 1,000 CFU/l at the tap (NN 64/2023).',
-          fixes: ['Hot water above 60 °C in the tank and at least 50 °C at the taps', 'Regular flushing of rarely used outlets', 'Thermal or chemical disinfection and removing dead legs'],
-          help: 'I prepare a risk assessment of the building’s pipework, a sampling plan and staff instructions, and get your documentation ready for inspection before the season.',
-        },
-      ],
     },
     services: {
       heading: 'Services',
