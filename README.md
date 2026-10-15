@@ -15,7 +15,7 @@ All copy is in `src/i18n/ui.ts`. Company details for the footer and structured d
 ## Stack
 
 - [Astro](https://astro.build) static build, no client framework. Small inline scripts handle the header, the scroll reveals and the contact form.
-- Hand-written CSS (`src/styles/global.css`). Instrument Serif and Archivo are self-hosted.
+- Hand-written CSS (`src/styles/global.css`), light theme. One self-hosted font (Archivo).
 - Motion (ripple rings, drifting water, slow reveals) is turned off for visitors who prefer reduced motion.
 - No cookies are set, so there is no cookie banner.
 
