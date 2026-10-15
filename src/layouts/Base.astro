@@ -66,7 +66,23 @@ const jsonLd = {
 
     <header class="site-header">
       <a class="brand" href={home(lang)} aria-label={company.name}><Logo /></a>
-      <a class="header-link" href={`${home(lang)}#contact`}>{t.contactLink}</a>
+
+      <button class="burger" type="button" aria-expanded="false" aria-controls="site-menu"
+        data-open={t.menu.open} data-close={t.menu.close} aria-label={t.menu.open} hidden>
+        <span></span><span></span>
+      </button>
+
+      <!-- Without JS the links show inline in the header; with JS they open as a full-screen menu. -->
+      <nav class="menu" id="site-menu" aria-label={t.menu.label}>
+        <ol class="menu-links">
+          {t.menu.links.map((l, i) => (
+            <li style={`--i: ${i}`}>
+              <a href={`${home(lang)}#${l.id}`}><span class="menu-num">{String(i + 1).padStart(2, '0')}</span>{l.label}</a>
+            </li>
+          ))}
+        </ol>
+        <p class="menu-foot"><a href={`mailto:${company.email}`}>{company.email}</a></p>
+      </nav>
     </header>
 
     <main id="main"><slot /></main>
@@ -90,6 +106,27 @@ const jsonLd = {
       const onScroll = () => header.classList.toggle('scrolled', scrollY > 40);
       addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      // Hamburger: a full-screen menu. Escape or a link click closes it; focus returns to the button.
+      const burger = header.querySelector<HTMLButtonElement>('.burger')!;
+      const menu = document.getElementById('site-menu')!;
+      const setOpen = (open: boolean) => {
+        burger.setAttribute('aria-expanded', String(open));
+        burger.setAttribute('aria-label', open ? burger.dataset.close! : burger.dataset.open!);
+        header.classList.toggle('menu-open', open);
+        document.documentElement.classList.toggle('no-scroll', open);
+        menu.inert = !open;
+        document.querySelectorAll<HTMLElement>('main, footer').forEach((el) => { el.inert = open; });
+        if (open) menu.querySelector('a')?.focus({ preventScroll: true });
+      };
+      header.classList.add('has-burger');
+      burger.hidden = false;
+      menu.inert = true;
+      burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+      menu.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) setOpen(false); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && header.classList.contains('menu-open')) { setOpen(false); burger.focus(); }
+      });
 
       // Let things surface slowly as they scroll into view.
       const items = document.querySelectorAll<HTMLElement>('[data-reveal]');

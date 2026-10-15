@@ -14,32 +14,41 @@ const en = {
   meta: {
     title: 'Deotto Lab – Water treatment for mission-critical cooling',
     description:
-      'Water treatment consulting, CPC flushing, passivation and commissioning for data center liquid cooling, to BSRIA BG29/2021 and ASHRAE.',
+      'Design and engineering, project consulting, and operations and maintenance for the water in data center and industrial cooling systems.',
   },
   skip: 'Skip to content',
-  contactLink: 'Contact',
+
+  menu: {
+    open: 'Open menu',
+    close: 'Close menu',
+    label: 'Menu',
+    links: [
+      { id: 'services', label: 'Services' },
+      { id: 'about', label: 'About us' },
+      { id: 'contact', label: 'Contact' },
+    ],
+  },
 
   hero: {
     headline: ['Clean water,', 'quietly kept.'],
-    lede: 'Water treatment and commissioning for mission-critical cooling.',
+    lede: 'Water treatment for mission-critical cooling.',
     cta: 'Begin a conversation',
     scroll: 'Scroll',
   },
 
-  work: {
-    heading: 'What we do',
+  // In project order, from the first drawing to years of operation.
+  services: {
+    heading: 'Services',
     items: [
-      { title: 'Consulting', note: 'from the first drawing' },
-      { title: 'CPC flushing', note: 'to BSRIA BG29/2021' },
-      { title: 'Commissioning', note: 'passivation and handover' },
-      { title: 'Live cleaning', note: 'without downtime' },
-      { title: 'Filtration skids', note: 'built in-house' },
-      { title: 'Water analysis', note: 'what the eye can’t see' },
+      { title: 'Design & Engineering', note: 'systems built to stay clean' },
+      { title: 'Project consulting', note: 'independent, from the first drawing' },
+      { title: 'Operations & Maintenance', note: 'treatment that lasts' },
     ],
   },
 
-  where: {
-    heading: 'Where',
+  about: {
+    heading: 'About us',
+    text: 'An independent water treatment lab from Zagreb. We look after the water inside cooling systems, then step aside.',
     places: ['Sweden', 'Norway', 'France', 'Croatia'],
     note: 'AI factories and data centers up to 40 MW. Some still running while we worked.',
   },

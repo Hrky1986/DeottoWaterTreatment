@@ -25,14 +25,14 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       <p class="hero-lede">{t.hero.lede}</p>
       <a class="quiet-link" href="#contact">{t.hero.cta} <span aria-hidden="true">→</span></a>
     </div>
-    <a class="scroll-cue" href="#work" aria-label={t.hero.scroll}><span></span></a>
+    <a class="scroll-cue" href="#services" aria-label={t.hero.scroll}><span></span></a>
   </section>
 
-  <section id="work" class="block" aria-labelledby="work-h">
-    <h2 id="work-h" class="kicker" data-reveal>{t.work.heading}</h2>
+  <section id="services" class="block" aria-labelledby="services-h">
+    <h2 id="services-h" class="kicker" data-reveal>{t.services.heading}</h2>
     <ol class="work">
-      {t.work.items.map((w, i) => (
-        <li data-reveal style={`--d: ${i * 70}ms`}>
+      {t.services.items.map((w, i) => (
+        <li data-reveal style={`--d: ${i * 60}ms`}>
           <span class="work-num">{String(i + 1).padStart(2, '0')}</span>
           <span class="work-title">{w.title}</span>
           <span class="work-note">{w.note}</span>
@@ -41,12 +41,13 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     </ol>
   </section>
 
-  <section class="block where" aria-labelledby="where-h">
-    <h2 id="where-h" class="kicker" data-reveal>{t.where.heading}</h2>
+  <section id="about" class="block where" aria-labelledby="about-h">
+    <h2 id="about-h" class="kicker" data-reveal>{t.about.heading}</h2>
+    <p class="about-text" data-reveal>{t.about.text}</p>
     <p class="places" data-reveal>
-      {t.where.places.map((p, i) => <><span class="place">{p}{i < t.where.places.length - 1 && <span class="dot" aria-hidden="true"> ·</span>}</span>{' '}</>)}
+      {t.about.places.map((p, i) => <><span class="place">{p}{i < t.about.places.length - 1 && <span class="dot" aria-hidden="true"> ·</span>}</span>{' '}</>)}
     </p>
-    <p class="where-note" data-reveal>{t.where.note}</p>
+    <p class="where-note" data-reveal>{t.about.note}</p>
   </section>
 
   <section id="contact" class="block contact" aria-labelledby="contact-h">
