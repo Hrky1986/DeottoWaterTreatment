@@ -31,7 +31,7 @@ const en = {
 
   hero: {
     headline: ['Clean water,', 'quietly kept.'],
-    lede: 'Water treatment and commissioning for mission-critical cooling.',
+    lede: 'Water treatment for mission-critical cooling.',
     cta: 'Begin a conversation',
     scroll: 'Scroll',
   },
