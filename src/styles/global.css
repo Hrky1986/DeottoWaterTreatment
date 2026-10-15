@@ -151,7 +151,7 @@ html.no-scroll { overflow: hidden; }
 @keyframes drift { from { transform: scale(1.04) translate(0, 0); } to { transform: scale(1.1) translate(-1.5%, 1%); } }
 
 .hero-inner { max-width: 60rem; }
-.hero h1 { font-size: clamp(3rem, 1.5rem + 6.5vw, 7.25rem); }
+.hero h1 { font-size: clamp(2.4rem, 1.2rem + 4.4vw, 4.9rem); }
 .hero h1 em { color: var(--accent); }
 .hero-lede { margin: 2rem auto 2.75rem; max-width: 30rem; color: var(--mist); font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem); }
 .hero-inner > * { animation: surface 1.4s var(--ease) both; }
@@ -275,3 +275,23 @@ html.no-scroll { overflow: hidden; }
 
 /* About */
 .about-text { max-width: 40rem; margin-bottom: clamp(3rem, 2rem + 3vw, 5rem); font-size: clamp(1.35rem, 1.1rem + 1.1vw, 2rem); font-weight: 300; line-height: 1.35; letter-spacing: -0.015em; }
+
+/* References: type and country, then the key specs. No client names. */
+.refs { display: grid; column-gap: 3.5rem; }
+@media (min-width: 52rem) { .refs { grid-template-columns: 1fr 1fr; } }
+.refs li {
+  position: relative; display: grid; grid-template-columns: 2.5rem 1fr; column-gap: 1rem; align-content: start;
+  padding: 1.6rem 0 1.8rem; border-top: 1px solid var(--line);
+}
+.refs li::after {
+  content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease);
+}
+.refs li:hover::after { transform: scaleX(1); }
+.refs .work-num { padding-top: 0.55rem; }
+.ref-title { font-size: clamp(1.45rem, 1.15rem + 1.1vw, 2.1rem); line-height: 1.15; letter-spacing: -0.025em; }
+.ref-country { color: var(--mist); }
+.ref-specs { grid-column: 2; margin-top: 0.7rem; font-size: 0.95rem; color: var(--mist); line-height: 1.7; }
+.ref-specs .spec { white-space: nowrap; }
+.ref-specs .dot { color: var(--accent); }

@@ -41,7 +41,22 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     </ol>
   </section>
 
-  <section id="about" class="block where" aria-labelledby="about-h">
+  <section id="references" class="block" aria-labelledby="references-h">
+    <h2 id="references-h" class="kicker" data-reveal>{t.references.heading}</h2>
+    <ol class="refs">
+      {t.references.items.map((r, i) => (
+        <li data-reveal style={`--d: ${(i % 2) * 90}ms`}>
+          <span class="work-num">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="ref-title">{r.title} <span class="ref-country">– {r.country}</span></h3>
+          <p class="ref-specs">
+            {r.specs.map((x, j) => <>{j > 0 && <span class="dot" aria-hidden="true"> · </span>}<span class="spec">{x}</span></>)}
+          </p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="about"class="block where" aria-labelledby="about-h">
     <h2 id="about-h" class="kicker" data-reveal>{t.about.heading}</h2>
     <p class="about-text" data-reveal>{t.about.text}</p>
     <p class="places" data-reveal>

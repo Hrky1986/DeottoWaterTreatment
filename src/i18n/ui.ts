@@ -16,7 +16,7 @@ const en = {
     title: 'Deotto Lab – Water treatment for data center cooling',
     description:
       'Independent water treatment for data center and industrial cooling: design & engineering, project consulting, operations & maintenance. Zagreb, Croatia.',
-    ogAlt: 'Clean water, quietly kept. Deotto Lab',
+    ogAlt: 'Cooling water treatment for data centers & industry. Deotto Lab',
   },
   skip: 'Skip to content',
 
@@ -26,14 +26,15 @@ const en = {
     label: 'Menu',
     links: [
       { id: 'services', label: 'Services' },
+      { id: 'references', label: 'References' },
       { id: 'about', label: 'About us' },
       { id: 'contact', label: 'Contact' },
     ],
   },
 
   hero: {
-    headline: ['Clean water,', 'quietly kept.'],
-    lede: 'Water treatment for mission-critical cooling.',
+    headline: ['Cooling water treatment', 'for data centers & industry.'],
+    lede: 'Design & engineering, project consulting and operations & maintenance for closed-loop and process cooling systems.',
     cta: 'Begin a conversation',
     scroll: 'Scroll',
   },
@@ -45,6 +46,19 @@ const en = {
       { title: 'Design & Engineering', note: 'systems built to stay clean' },
       { title: 'Project consulting', note: 'independent, from the first drawing' },
       { title: 'Operations & Maintenance', note: 'treatment that lasts' },
+    ],
+  },
+
+  // Client and investor names are left out on purpose. Each spec line is split on " · ".
+  references: {
+    heading: 'References',
+    items: [
+      { title: 'AI/HPC Data Center', country: 'Norway', specs: ['12 MW IT', 'Direct liquid cooling', 'Racks up to 110 kW', 'N+1'] },
+      { title: 'AI Data Center', country: 'Norway', specs: ['40 MW IT', '21,300 m²', 'SFN flushing', 'Commissioning'] },
+      { title: 'AI Data Center', country: 'Norway', specs: ['40 MW IT', 'Consulting from design', 'Cleaning', 'Commissioning'] },
+      { title: 'AI Supercomputer', country: 'Sweden', specs: ['NVIDIA DGX SuperPOD (GB300)', 'Liquid cooled', 'Cleaning & passivation', 'SFN flushing'] },
+      { title: 'Colocation Data Center', country: 'France', specs: ['Live site', '99.999% uptime', 'Cleaning without downtime', 'Passivation'] },
+      { title: 'Dairy, own water source', country: 'Croatia', specs: ['2 wells, 16.5 m and 21.5 m', 'Exploration & drilling', 'Water preparation'] },
     ],
   },
 
