@@ -8,7 +8,7 @@
 //   CONTACT_FROM      sender, e.g. "Deotto Lab website <web@deottolab.com>"
 //   TURNSTILE_SECRET  optional; set together with PUBLIC_TURNSTILE_SITE_KEY at build time
 
-const LIMITS = { name: 120, company: 160, email: 200, phone: 40, industry: 80, message: 5000 };
+const LIMITS = { name: 120, company: 160, email: 200, message: 5000 };
 
 export async function onRequestPost({ request, env }) {
   const wantsJson = (request.headers.get('Accept') || '').includes('application/json');
@@ -25,7 +25,7 @@ export async function onRequestPost({ request, env }) {
 
   const data = {};
   for (const [key, max] of Object.entries(LIMITS)) data[key] = String(form.get(key) || '').trim().slice(0, max);
-  const valid = data.name && data.company && data.industry && data.message
+  const valid = data.name && data.message
     && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) && form.get('consent') === 'yes';
   if (!valid) return reply(422, 'invalid');
 
@@ -45,10 +45,8 @@ export async function onRequestPost({ request, env }) {
 
   const text = [
     `Name: ${data.name}`,
-    `Company: ${data.company}`,
+    `Company: ${data.company || '-'}`,
     `Email: ${data.email}`,
-    `Phone: ${data.phone || '-'}`,
-    `Industry: ${data.industry}`,
     `Language: ${lang}`,
     '',
     data.message,
@@ -63,7 +61,7 @@ export async function onRequestPost({ request, env }) {
       from: env.CONTACT_FROM,
       to: env.CONTACT_TO.split(',').map((s) => s.trim()),
       reply_to: data.email,
-      subject: `Website enquiry: ${data.company} (${data.industry})`,
+      subject: `Website enquiry from ${data.name}${data.company ? `, ${data.company}` : ""}`,
       text,
     }),
   }).catch(() => null);
@@ -73,10 +71,10 @@ export async function onRequestPost({ request, env }) {
 
   function reply(status, code) {
     if (wantsJson) return Response.json({ ok: status === 200, code }, { status });
-    // Without JavaScript: go to the thank-you page, or back to the form on error.
+    // Without JavaScript: back to the form, showing the thank-you note on success.
     const url = new URL(request.url);
-    url.pathname = status === 200 ? `/${lang}/contact/thanks/` : `/${lang}/contact/`;
-    url.search = status === 200 ? '' : `?error=${code}`;
+    url.pathname = `/${lang}/`;
+    url.hash = status === 200 ? 'sent' : 'contact';
     return Response.redirect(url.toString(), 303);
   }
 }
