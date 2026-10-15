@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { defaultLang, ui } from '../i18n/ui';
+import { link } from '../lib/site';
+
+const lang = defaultLang;
+const t = ui[lang];
+const links = [
+  { href: link(lang), label: t.nav.home },
+  { href: link(lang, 'services'), label: t.nav.services },
+  { href: link(lang, 'data-centers'), label: t.nav.dataCenters },
+  { href: link(lang, 'references'), label: t.nav.references },
+  { href: link(lang, 'contact'), label: t.nav.contact },
+];
+---
+<Base lang={lang} title={t.notFound.title} description={t.notFound.text} noindex>
+  <PageHero lang={lang} eyebrow="404" title={t.notFound.heading} lede={t.notFound.text}>
+    <ul class="chip-links chip-links-dark">{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+  </PageHero>
+</Base>

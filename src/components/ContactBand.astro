@@ -1,0 +1,17 @@
+---
+import { ui, type Lang } from '../i18n/ui';
+import { link } from '../lib/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+<section class="contact-band" aria-labelledby="contact-band-h">
+  <div class="wrap contact-band-inner" data-reveal>
+    <div>
+      <h2 id="contact-band-h">{t.contactBand.heading}</h2>
+      <p>{t.contactBand.text}</p>
+    </div>
+    <a class="btn btn-light btn-lg" href={link(lang, 'contact')}>{t.cta} <span class="arrow" aria-hidden="true">→</span></a>
+  </div>
+</section>

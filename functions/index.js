@@ -1,10 +1,15 @@
 // Cloudflare Pages Function for "/" only.
-// Order: language the visitor picked before (cookie) → IP country from Cloudflare → English.
+// English is the only language for now. When the Croatian version is added, put 'hr' in LANGS:
+// visitors then get the language they picked before (cookie), or Croatian when they browse from Croatia.
+const LANGS = ['en'];
+const DEFAULT = 'en';
+
 export function onRequest({ request }) {
   const cookie = request.headers.get('Cookie') || '';
-  const saved = cookie.match(/(?:^|;\s*)lang=(hr|en)\b/)?.[1];
+  const saved = cookie.match(/(?:^|;\s*)lang=([a-z]{2})\b/)?.[1];
   const country = request.cf?.country || request.headers.get('CF-IPCountry');
-  const lang = saved || (country === 'HR' ? 'hr' : 'en');
+  const byCountry = country === 'HR' ? 'hr' : DEFAULT;
+  const lang = [saved, byCountry].find((l) => LANGS.includes(l)) || DEFAULT;
 
   const url = new URL(request.url);
   url.pathname = `/${lang}/`;

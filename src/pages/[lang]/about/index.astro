@@ -1,0 +1,35 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { company } from '../../../data/company';
+import { ui, type Lang } from '../../../i18n/ui';
+import { getPage, langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+const page = await getPage(lang, 'about');
+const { Content } = await render(page);
+const crumbs = [{ label: t.nav.home, href: link(lang) }, { label: t.nav.about }];
+---
+<Base lang={lang} title={`${page.data.title} – Deotto Lab`} description={page.data.description} path={['about']} breadcrumbs={crumbs}>
+  <PageHero lang={lang} title={page.data.title} lede={page.data.lede} crumbs={crumbs} />
+
+  <section class="section">
+    <div class="wrap detail-grid">
+      <div class="prose prose-lg" data-reveal><Content /></div>
+      <aside class="panel" data-reveal>
+        <h2 class="h-small">{t.about.based}</h2>
+        <p class="panel-big">{company.city}, {company.country}</p>
+        <h2 class="h-small">{t.about.countries}</h2>
+        <ul class="country-list">{t.about.countryList.map((c) => <li>{c}</li>)}</ul>
+        <h2 class="h-small">{t.about.standards}</h2>
+        <ul class="badges"><li>BSRIA BG29/2021</li><li>ASHRAE</li></ul>
+      </aside>
+    </div>
+  </section>
+
+  <ContactBand lang={lang} />
+</Base>

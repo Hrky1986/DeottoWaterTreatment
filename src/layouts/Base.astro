@@ -1,0 +1,221 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '../styles/global.css';
+import fontLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import Logo from '../components/Logo.astro';
+import { langs, locales, ui, type Lang } from '../i18n/ui';
+import { company } from '../data/company';
+import { base, getIndustries, getServices, industryLink, link, orgId } from '../lib/site';
+
+interface Crumb { label: string; href?: string }
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path below the language folder, e.g. ['services', 'water-analysis']. */
+  path?: string[];
+  breadcrumbs?: Crumb[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { lang, title, description, path = [], breadcrumbs = [], noindex = false, jsonLd = [] } = Astro.props;
+const t = ui[lang];
+const site = Astro.site!;
+const abs = (l: Lang) => new URL(link(l, ...path), site).href;
+const ogImage = new URL(`${base}og-image.jpg`, site).href;
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+
+const nav = [
+  { href: link(lang, 'services'), label: t.nav.services },
+  { href: link(lang, 'data-centers'), label: t.nav.dataCenters },
+  { href: link(lang, 'industries'), label: t.nav.industries },
+  { href: link(lang, 'references'), label: t.nav.references },
+  { href: link(lang, 'about'), label: t.nav.about },
+];
+const contactHref = link(lang, 'contact');
+const isCurrent = (href: string) => here.startsWith(href);
+
+const services = await getServices(lang);
+const industries = await getIndustries(lang);
+const year = new Date().getFullYear();
+
+const graph = [
+  {
+    '@type': 'ProfessionalService',
+    '@id': orgId(site),
+    name: company.name,
+    legalName: company.legalName,
+    url: new URL(link(lang), site).href,
+    logo: new URL(`${base}favicon.svg`, site).href,
+    image: ogImage,
+    email: company.email,
+    telephone: company.phone,
+    address: { '@type': 'PostalAddress', streetAddress: company.street, postalCode: company.postcode, addressLocality: company.city, addressCountry: company.countryCode },
+    areaServed: ['Croatia', 'France', 'Norway', 'Sweden'].map((name) => ({ '@type': 'Country', name })),
+    knowsAbout: ['Data center water treatment', 'Liquid cooling flushing', 'CHW passivation', 'Commissioning water treatment', 'BSRIA BG29/2021', 'ASHRAE'],
+  },
+  { '@type': 'WebPage', '@id': `${abs(lang)}#webpage`, url: abs(lang), name: title, description, inLanguage: lang, publisher: { '@id': orgId(site) } },
+  ...(breadcrumbs.length
+    ? [{
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((c, i) => ({
+          '@type': 'ListItem', position: i + 1, name: c.label, ...(c.href ? { item: new URL(c.href, site).href } : {}),
+        })),
+      }]
+    : []),
+  ...jsonLd,
+];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={abs(lang)} />}
+    {!noindex && langs.length > 1 && langs.map((l) => <link rel="alternate" hreflang={l} href={abs(l)} />)}
+    {!noindex && langs.length > 1 && <link rel="alternate" hreflang="x-default" href={abs('en')} />}
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={company.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={abs(lang)} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={locales[lang].og} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="sitemap" type="application/xml" href={`${base}sitemap.xml`} />
+    <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.skip}</a>
+
+    <header class="site-header">
+      <div class="bar wrap">
+        <a class="brand" href={link(lang)} aria-label={`${company.name} – ${t.nav.home}`}><Logo /></a>
+
+        <nav class="nav" id="site-nav" aria-label={t.menu.label}>
+          <ul>
+            {nav.map((n) => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+            <li class="nav-contact"><a href={contactHref} aria-current={isCurrent(contactHref) ? 'page' : undefined}>{t.nav.contact}</a></li>
+          </ul>
+        </nav>
+
+        <a class="btn btn-primary btn-sm header-cta" href={contactHref}>{t.cta}</a>
+
+        <button class="burger" type="button" aria-expanded="false" aria-controls="site-nav"
+          data-open={t.menu.open} data-close={t.menu.close} aria-label={t.menu.open} hidden>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href={link(lang)} class="brand" aria-label={`${company.name} – ${t.nav.home}`}><Logo class="logo-invert" /></a>
+            <p>{t.tagline}</p>
+            <a class="btn btn-light btn-sm" href={contactHref}>{t.cta}</a>
+          </div>
+          <div>
+            <h2><a href={link(lang, 'services')}>{t.footer.services}</a></h2>
+            <ul>{services.map((s) => <li><a href={link(lang, 'services', s.slug)}>{s.data.title}</a></li>)}</ul>
+          </div>
+          <div>
+            <h2><a href={link(lang, 'industries')}>{t.footer.industries}</a></h2>
+            <ul>{industries.map((i) => <li><a href={industryLink(lang, i)}>{i.data.title}</a></li>)}</ul>
+          </div>
+          <div>
+            <h2>{t.footer.company}</h2>
+            <ul>
+              <li><a href={link(lang, 'references')}>{t.nav.references}</a></li>
+              <li><a href={link(lang, 'about')}>{t.nav.about}</a></li>
+              <li><a href={contactHref}>{t.nav.contact}</a></li>
+              <li><a href={link(lang, 'privacy')}>{t.nav.privacy}</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-legal">
+          <address>
+            <strong>{company.legalName}</strong>, {company.street}, {company.postcode} {company.city}, {company.country}<br />
+            OIB {company.oib} · {company.register} · {company.capital}<br />
+            IBAN {company.iban}, {company.bank} · {company.board}<br />
+            <a href={`mailto:${company.email}`}>{company.email}</a> · <a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a>
+          </address>
+          <p>© {year} {company.legalName}. {t.footer.rights}</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cookie" role="region" aria-label={t.cookie.label} hidden>
+      <p>{t.cookie.text} <a href={link(lang, 'privacy')}>{t.cookie.link}</a></p>
+      <button type="button" class="btn btn-sm btn-primary">{t.cookie.ok}</button>
+    </div>
+
+    <script>
+      // Hamburger menu. Without JS the button stays hidden and the links are always shown.
+      const burger = document.querySelector<HTMLButtonElement>('.burger');
+      const header = document.querySelector<HTMLElement>('.site-header');
+      if (burger && header) {
+        const nav = document.getElementById('site-nav')!;
+        const setOpen = (open: boolean) => {
+          burger.setAttribute('aria-expanded', String(open));
+          burger.setAttribute('aria-label', open ? burger.dataset.close! : burger.dataset.open!);
+          header.classList.toggle('menu-open', open);
+          document.documentElement.classList.toggle('no-scroll', open);
+        };
+        header.classList.add('has-burger');
+        burger.hidden = false;
+        burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+        nav.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) setOpen(false); });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && header.classList.contains('menu-open')) { setOpen(false); burger.focus(); }
+        });
+        matchMedia('(min-width: 64rem)').addEventListener('change', () => setOpen(false));
+
+        // A soft shadow once the page has scrolled under the header.
+        const onScroll = () => header.classList.toggle('scrolled', scrollY > 4);
+        addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+
+      // Fade sections in as they scroll into view (skipped when reduced motion is preferred).
+      const reveal = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+        }, { rootMargin: '0px 0px -8% 0px' });
+        reveal.forEach((el) => io.observe(el));
+      } else {
+        reveal.forEach((el) => el.classList.add('is-in'));
+      }
+
+      // Cookie notice: informational only (no tracking cookies), so one click hides it for good.
+      const notice = document.querySelector<HTMLElement>('.cookie');
+      let seen = false;
+      try { seen = localStorage.getItem('cookie-notice') === '1'; } catch {}
+      if (notice && !seen) {
+        notice.hidden = false;
+        notice.querySelector('button')!.addEventListener('click', () => {
+          notice.hidden = true;
+          try { localStorage.setItem('cookie-notice', '1'); } catch {}
+        });
+      }
+    </script>
+  </body>
+</html>

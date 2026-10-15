@@ -1,0 +1,16 @@
+---
+// Shown after a form submission without JavaScript (the server redirects here).
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { ui, type Lang } from '../../../i18n/ui';
+import { langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const c = ui[lang].contact;
+---
+<Base lang={lang} title={c.thanksTitle} description={c.thanksText} path={['contact', 'thanks']} noindex>
+  <PageHero lang={lang} title={c.thanksHeading} lede={c.thanksText}>
+    <div class="actions"><a class="btn btn-bright" href={link(lang)}>{c.thanksBack}</a></div>
+  </PageHero>
+</Base>
