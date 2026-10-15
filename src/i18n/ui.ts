@@ -14,7 +14,7 @@ const en = {
   meta: {
     title: 'Deotto Lab – Water treatment for mission-critical cooling',
     description:
-      'Water treatment consulting, CPC flushing, passivation and commissioning for data center liquid cooling, to BSRIA BG29/2021 and ASHRAE.',
+      'Design and engineering, project consulting, and operations and maintenance for the water in data center and industrial cooling systems.',
   },
   skip: 'Skip to content',
 
@@ -42,12 +42,7 @@ const en = {
     items: [
       { title: 'Design & Engineering', note: 'systems built to stay clean' },
       { title: 'Project consulting', note: 'independent, from the first drawing' },
-      { title: 'CPC flushing', note: 'to BSRIA BG29/2021' },
-      { title: 'Commissioning', note: 'passivation and handover' },
       { title: 'Operations & Maintenance', note: 'treatment that lasts' },
-      { title: 'Live cleaning', note: 'without downtime' },
-      { title: 'Filtration skids', note: 'built in-house' },
-      { title: 'Water analysis', note: 'what the eye can’t see' },
     ],
   },
 
