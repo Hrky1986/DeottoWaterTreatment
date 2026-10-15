@@ -1,0 +1,33 @@
+---
+// TODO(client): draft only. Have it reviewed, and fill in the company details before launch.
+import Base from '../../layouts/Base.astro';
+import { company } from '../../data/company';
+import { home, langs, ui, type Lang } from '../../i18n/ui';
+
+export const getStaticPaths = () => langs.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+---
+<Base lang={lang} title={t.privacy.title} description="How Deotto Lab handles the personal data sent through this website." path="privacy">
+  <article class="block legal">
+    <h1>{t.privacy.heading}</h1>
+
+    <h2>Who we are</h2>
+    <p>The controller of your personal data is {company.legalName}, {company.street}, {company.postcode} {company.city}, {company.country} (OIB {company.oib}). For any privacy question, write to <a href={`mailto:${company.email}`}>{company.email}</a>.</p>
+
+    <h2>What we collect and why</h2>
+    <p>Only what you send us through the form or by email: your name, company, email address and message. We use it to reply to you and, if you wish, to prepare an offer. The legal basis is your consent and steps taken at your request before a contract (Article 6(1)(a) and (b) GDPR).</p>
+    <p>We don’t use your data for marketing, and we don’t sell it or share it with third parties, except the providers that host this website and deliver our email. They process it only on our behalf.</p>
+
+    <h2>How long we keep it</h2>
+    <p>As long as needed to handle your enquiry, and no longer than two years after our last contact, unless it leads to a contract. Contract records are kept for as long as the law requires.</p>
+
+    <h2>Your rights</h2>
+    <p>You can ask for access, correction, deletion, restriction or portability of your data, and you can withdraw consent at any time. You may also complain to the Croatian Personal Data Protection Agency (AZOP, azop.hr).</p>
+
+    <h2>Cookies</h2>
+    <p>This site doesn’t use cookies for tracking, advertising or analytics. If spam protection is enabled on the form, it may use a strictly necessary security check from our hosting provider.</p>
+
+    <p class="legal-back"><a class="quiet-link" href={home(lang)}><span aria-hidden="true">←</span> {t.privacy.back}</a></p>
+  </article>
+</Base>

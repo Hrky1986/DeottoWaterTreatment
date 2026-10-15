@@ -2,8 +2,7 @@
 // Fallback for "/" when the site is served without the edge function
 // (local preview, GitHub Pages, any static host). On Cloudflare Pages,
 // functions/index.js answers "/" first with a server redirect.
-import { defaultLang, langs } from '../i18n/ui';
-import { base } from '../lib/site';
+import { base, defaultLang, langs } from '../i18n/ui';
 
 const site = Astro.site!;
 const target = `${base}${defaultLang}/`;
