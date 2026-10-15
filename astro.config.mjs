@@ -5,7 +5,7 @@ import { defineConfig } from 'astro/config';
 // Cloudflare Pages the site is served from the domain root.
 export default defineConfig({
   // TODO: replace the fallback with the real domain once it is registered.
-  site: process.env.SITE || 'https://deotto.hr',
+  site: process.env.SITE || 'https://deottolab.com',
   base: process.env.BASE_PATH || '/',
   trailingSlash: 'always',
   build: { inlineStylesheets: 'always' },

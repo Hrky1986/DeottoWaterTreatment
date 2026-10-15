@@ -1,0 +1,36 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import IndustryIcon from '../../../components/IndustryIcon.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { ui, type Lang } from '../../../i18n/ui';
+import { getIndustries, industryLink, langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+const industries = await getIndustries(lang);
+const crumbs = [{ label: t.nav.home, href: link(lang) }, { label: t.nav.industries }];
+---
+<Base lang={lang} title={t.industries.title} description={t.industries.description} path={['industries']} breadcrumbs={crumbs}>
+  <PageHero lang={lang} title={t.industries.heading} lede={t.industries.lede} crumbs={crumbs} />
+
+  <section class="section">
+    <div class="wrap">
+      <ul class="industry-grid" data-reveal>
+        {industries.map((i) => (
+          <li class:list={['industry-card', { lead: i.data.lead }]}>
+            <IndustryIcon slug={i.slug} />
+            {i.data.lead && <p class="eyebrow">{t.dataCenters.eyebrow}</p>}
+            <h2><a href={industryLink(lang, i)}>{i.data.title}</a></h2>
+            <p>{i.data.intro}</p>
+            <ul class="tags">{i.data.systems.map((s) => <li>{s}</li>)}</ul>
+            <span class="tile-arrow" aria-hidden="true">→</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <ContactBand lang={lang} />
+</Base>

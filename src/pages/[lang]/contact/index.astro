@@ -1,0 +1,155 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { company } from '../../../data/company';
+import { ui, type Lang } from '../../../i18n/ui';
+import { base, getIndustries, langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+const c = t.contact;
+const f = c.form;
+const industries = await getIndustries(lang);
+// Cloudflare Turnstile spam check, only when a site key is configured (see README).
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const crumbs = [{ label: t.nav.home, href: link(lang) }, { label: t.nav.contact }];
+---
+<Base lang={lang} title={c.title} description={c.description} path={['contact']} breadcrumbs={crumbs}>
+  <PageHero lang={lang} title={c.heading} lede={c.lede} crumbs={crumbs} />
+
+  <section class="section section-paper">
+    <div class="wrap contact-grid">
+      <form class="form card" method="post" action={`${base}api/contact`} data-form novalidate>
+        <input type="hidden" name="lang" value={lang} />
+        <!-- Honeypot: hidden from people, filled in by bots. -->
+        <div class="hp" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-name">{f.name}</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="120" />
+            <p class="field-error" id="f-name-err" hidden>{f.required}</p>
+          </div>
+          <div class="field">
+            <label for="f-company">{f.company}</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization" required maxlength="160" />
+            <p class="field-error" id="f-company-err" hidden>{f.required}</p>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-email">{f.email}</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="200" />
+            <p class="field-error" id="f-email-err" hidden>{f.required}</p>
+          </div>
+          <div class="field">
+            <label for="f-phone">{f.phone} <span class="opt">({f.optional})</span></label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-industry">{f.industry}</label>
+          <div class="select">
+            <select id="f-industry" name="industry" required>
+              <option value="" disabled selected>{f.industryPlaceholder}</option>
+              {industries.map((i) => <option>{i.data.title}</option>)}
+              <option>{f.industryOther}</option>
+            </select>
+          </div>
+          <p class="field-error" id="f-industry-err" hidden>{f.required}</p>
+        </div>
+        <div class="field">
+          <label for="f-message">{f.message}</label>
+          <textarea id="f-message" name="message" rows="6" required maxlength="5000" aria-describedby="f-message-hint"></textarea>
+          <p class="hint" id="f-message-hint">{f.messageHint}</p>
+          <p class="field-error" id="f-message-err" hidden>{f.required}</p>
+        </div>
+        <div class="field field-check">
+          <input id="f-consent" name="consent" type="checkbox" value="yes" required />
+          <label for="f-consent">{f.consent} <a href={link(lang, 'privacy')}>{f.consentLink}</a>.</label>
+          <p class="field-error" id="f-consent-err" hidden>{f.required}</p>
+        </div>
+
+        {turnstileKey && <div class="cf-turnstile" data-sitekey={turnstileKey}></div>}
+
+        <div class="form-actions">
+          <button class="btn btn-primary btn-lg" type="submit" data-label={f.submit} data-sending={f.sending}>{f.submit}</button>
+        </div>
+        <div class="form-status" role="status" aria-live="polite" data-status hidden></div>
+        <template data-sent><p class="ok">{f.sent}</p></template>
+        <template data-error><p class="err">{f.error} <a href={`mailto:${company.email}`}>{company.email}</a>.</p></template>
+      </form>
+
+      <aside class="panel contact-details">
+        <h2 class="h-small">{c.detailsHeading}</h2>
+        <dl>
+          <div><dt>{c.email}</dt><dd><a href={`mailto:${company.email}`}>{company.email}</a></dd></div>
+          <div><dt>{c.phone}</dt><dd><a href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a></dd></div>
+          <div><dt>{c.address}</dt><dd>{company.legalName}<br />{company.street}<br />{company.postcode} {company.city}, {company.country}</dd></div>
+          <div><dt>OIB</dt><dd>{company.oib}</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+{turnstileKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script>
+  // Inline validation and an in-page submit. Without JS the form posts normally
+  // and the server redirects to the thank-you page.
+  const form = document.querySelector<HTMLFormElement>('[data-form]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const fields = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]')];
+
+    const check = (el: (typeof fields)[number]) => {
+      const err = document.getElementById(`${el.id}-err`);
+      const ok = el.checkValidity();
+      el.setAttribute('aria-invalid', String(!ok));
+      if (err) {
+        err.hidden = ok;
+        const ids = (el.getAttribute('aria-describedby') || '').split(' ').filter((id) => id && id !== err.id);
+        if (!ok) ids.push(err.id);
+        el.setAttribute('aria-describedby', ids.join(' '));
+      }
+      return ok;
+    };
+    fields.forEach((el) => {
+      el.addEventListener('blur', () => { if (el.value || el.getAttribute('aria-invalid')) check(el); });
+      el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') check(el); });
+      el.addEventListener('change', () => check(el));
+    });
+
+    const show = (kind: 'sent' | 'error') => {
+      status.replaceChildren(form.querySelector<HTMLTemplateElement>(`template[data-${kind}]`)!.content.cloneNode(true));
+      status.hidden = false;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const invalid = fields.filter((el) => !check(el));
+      if (invalid.length) { invalid[0].focus(); return; }
+
+      button.disabled = true;
+      button.textContent = button.dataset.sending!;
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        fields.forEach((el) => el.removeAttribute('aria-invalid'));
+        show('sent');
+      } catch {
+        show('error');
+      } finally {
+        button.disabled = false;
+        button.textContent = button.dataset.label!;
+        (window as any).turnstile?.reset();
+      }
+    });
+  }
+</script>

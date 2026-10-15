@@ -1,0 +1,68 @@
+---
+// Decorative schematic for the home hero: a chilled water loop running from the plant to the CDU
+// and racks, and back through a CPC filtration skid. The dashes move to suggest flow
+// (they stand still when reduced motion is preferred).
+---
+<svg class="loop" viewBox="0 0 480 380" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="loop-dots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" class="loop-dot" />
+    </pattern>
+    <pattern id="loop-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" class="loop-hatch" />
+    </pattern>
+  </defs>
+  <rect width="480" height="380" fill="url(#loop-dots)" />
+
+  <!-- pipework -->
+  <g class="pipe">
+    <path d="M134 92H300" />
+    <path d="M134 120H300" class="pipe-return" />
+    <path d="M335 150V302H310" />
+    <path d="M190 302H79V150" />
+    <path d="M370 86H392M370 112H392" class="pipe-sfn" />
+  </g>
+  <g class="flow">
+    <path d="M134 92H300" />
+    <path d="M300 120H134" class="flow-slow" />
+    <path d="M335 150V302H310" />
+    <path d="M190 302H79V150" />
+  </g>
+
+  <!-- CHW plant -->
+  <g class="node">
+    <rect x="24" y="60" width="110" height="90" rx="6" />
+    <path class="node-detail" d="M44 112l8-10 8 10 8-10 8 10 8-10 8 10 8-10 8 10" />
+    <text x="36" y="82">CHW PLANT</text>
+  </g>
+
+  <!-- CDU -->
+  <g class="node">
+    <rect x="300" y="60" width="70" height="90" rx="6" />
+    <circle class="node-detail" cx="335" cy="112" r="12" />
+    <path class="node-detail" d="M329 112h12m-4-4 4 4-4 4" />
+    <text x="320" y="82">CDU</text>
+  </g>
+
+  <!-- racks with cold plates -->
+  <g class="racks">
+    <rect x="392" y="40" width="20" height="132" rx="3" />
+    <rect x="416" y="40" width="20" height="132" rx="3" />
+    <rect x="440" y="40" width="20" height="132" rx="3" />
+    <path class="rack-lines" d="M396 58h12M396 72h12M396 86h12M396 100h12M396 114h12M396 128h12M396 142h12M396 156h12M420 58h12M420 72h12M420 86h12M420 100h12M420 114h12M420 128h12M420 142h12M420 156h12M444 58h12M444 72h12M444 86h12M444 100h12M444 114h12M444 128h12M444 142h12M444 156h12" />
+    <text x="392" y="194">RACKS · DLC</text>
+  </g>
+
+  <!-- CPC filtration skid -->
+  <g class="node node-accent">
+    <rect x="190" y="268" width="120" height="68" rx="6" />
+    <rect x="204" y="284" width="40" height="38" rx="3" fill="url(#loop-hatch)" class="skid-filter" />
+    <circle class="node-detail" cx="276" cy="303" r="13" />
+    <path class="node-detail" d="M270 303h12m-4-4 4 4-4 4" />
+    <text x="190" y="356">CPC FILTRATION SKID</text>
+  </g>
+
+  <text class="pipe-label" x="180" y="84">SUPPLY</text>
+  <text class="pipe-label" x="180" y="138">RETURN</text>
+  <text class="pipe-label" x="372" y="76">SFN</text>
+</svg>

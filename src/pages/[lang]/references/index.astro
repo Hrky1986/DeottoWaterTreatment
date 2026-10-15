@@ -1,0 +1,94 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import PageHero from '../../../components/PageHero.astro';
+import RefCard from '../../../components/RefCard.astro';
+import { ui, type Lang } from '../../../i18n/ui';
+import { getIndustries, getReferences, getServices, langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+const r = t.references;
+const refs = await getReferences(lang);
+const industries = await getIndustries(lang);
+const services = await getServices(lang);
+const industryName = Object.fromEntries(industries.map((i) => [i.slug, i.data.title]));
+
+// Only offer filters that match at least one project.
+const industryFilters = industries.filter((i) => refs.some((x) => x.data.industry === i.slug));
+const serviceFilters = services.filter((s) => refs.some((x) => x.data.services.includes(s.slug)));
+const crumbs = [{ label: t.nav.home, href: link(lang) }, { label: t.nav.references }];
+---
+<Base lang={lang} title={r.title} description={r.description} path={['references']} breadcrumbs={crumbs}>
+  <PageHero lang={lang} title={r.heading} lede={r.lede} crumbs={crumbs} />
+
+  <section class="section section-paper">
+    <div class="wrap">
+      <!-- Filters work with JS; without it every project is listed. -->
+      <div class="filters" hidden data-filters>
+        <div class="filter-group" role="group" aria-labelledby="f-ind">
+          <span id="f-ind" class="filter-label">{r.filterIndustry}</span>
+          <button type="button" data-group="industry" data-value="" aria-pressed="true">{r.all}</button>
+          {industryFilters.map((i) => <button type="button" data-group="industry" data-value={i.slug} aria-pressed="false">{i.data.title}</button>)}
+        </div>
+        <div class="filter-group" role="group" aria-labelledby="f-svc">
+          <span id="f-svc" class="filter-label">{r.filterService}</span>
+          <button type="button" data-group="service" data-value="" aria-pressed="true">{r.all}</button>
+          {serviceFilters.map((s) => <button type="button" data-group="service" data-value={s.slug} aria-pressed="false">{s.data.title}</button>)}
+        </div>
+        <p class="filter-count" aria-live="polite" data-count data-labels={JSON.stringify(refs.map((_, n) => r.count(n)).concat(r.count(refs.length)))}>{r.count(refs.length)}</p>
+      </div>
+
+      <div class="ref-grid" data-grid>
+        {refs.map((x) => <RefCard lang={lang} reference={x} industryName={industryName[x.data.industry]} headingLevel="h2" />)}
+      </div>
+      <div class="empty" hidden data-empty>
+        <p>{r.empty}</p>
+        <button type="button" class="btn btn-outline" data-reset>{r.reset}</button>
+      </div>
+    </div>
+  </section>
+
+  <ContactBand lang={lang} />
+</Base>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-filters]');
+  if (box) {
+    box.hidden = false;
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] .ref-card')];
+    const buttons = [...box.querySelectorAll<HTMLButtonElement>('button[data-group]')];
+    const count = box.querySelector<HTMLElement>('[data-count]')!;
+    const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+    // One label per possible count, built at build time so plural rules stay in the translations.
+    const labels: string[] = JSON.parse(count.dataset.labels!);
+    const state: Record<string, string> = { industry: '', service: '' };
+
+    const apply = () => {
+      let shown = 0;
+      for (const c of cards) {
+        const ok = (!state.industry || c.dataset.industry === state.industry)
+          && (!state.service || c.dataset.services!.split(' ').includes(state.service));
+        c.hidden = !ok;
+        if (ok) shown++;
+      }
+      for (const b of buttons) b.setAttribute('aria-pressed', String(state[b.dataset.group!] === b.dataset.value));
+      count.textContent = labels[shown];
+      empty.hidden = shown > 0;
+      // Keep the choice in the URL so a filtered list can be shared or bookmarked.
+      const q = new URLSearchParams(Object.entries(state).filter(([, v]) => v));
+      history.replaceState(null, '', q.size ? `?${q}` : location.pathname);
+    };
+
+    for (const b of buttons) b.addEventListener('click', () => { state[b.dataset.group!] = b.dataset.value!; apply(); });
+    empty.querySelector('[data-reset]')!.addEventListener('click', () => { state.industry = state.service = ''; apply(); });
+
+    const q = new URLSearchParams(location.search);
+    for (const g of ['industry', 'service']) {
+      const v = q.get(g);
+      if (v && buttons.some((b) => b.dataset.group === g && b.dataset.value === v)) state[g] = v;
+    }
+    apply();
+  }
+</script>

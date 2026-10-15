@@ -1,0 +1,101 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import PageHero from '../../../components/PageHero.astro';
+import RefCard from '../../../components/RefCard.astro';
+import { langs, ui, type Lang } from '../../../i18n/ui';
+import { getIndustries, getReferences, getServices, industryLink, link, paragraphs, refName, uploadedImage } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of langs) for (const r of await getReferences(lang)) paths.push({ params: { lang, slug: r.slug } });
+  return paths;
+}
+
+const { lang: l, slug } = Astro.params;
+const lang = l as Lang;
+const t = ui[lang];
+const r = t.references;
+const refs = await getReferences(lang);
+const ref = refs.find((x) => x.slug === slug)!;
+const d = ref.data;
+const industry = (await getIndustries(lang)).find((i) => i.slug === d.industry);
+const services = (await getServices(lang)).filter((s) => d.services.includes(s.slug));
+// The public source names the client, so it is only linked once the client has agreed.
+const source = d.showClient && d.source?.url ? d.source : undefined;
+const photo = uploadedImage(d.image);
+const name = refName(ref);
+
+// Up to three other projects, same industry first.
+const more = refs
+  .filter((x) => x.slug !== slug)
+  .sort((a, b) => Number(b.data.industry === d.industry) - Number(a.data.industry === d.industry))
+  .slice(0, 3);
+
+const crumbs = [
+  { label: t.nav.home, href: link(lang) },
+  { label: t.nav.references, href: link(lang, 'references') },
+  { label: name },
+];
+const sections = [
+  { id: 'challenge', title: r.challenge, text: d.challenge },
+  { id: 'scope', title: r.scope, text: d.ourScope },
+  { id: 'result', title: r.result, text: d.result },
+];
+---
+<Base lang={lang} title={`${name} – ${t.nav.references} – Deotto Lab`} description={d.description}
+  path={['references', slug!]} breadcrumbs={crumbs}>
+  <PageHero lang={lang} eyebrow={industry?.data.title} title={name} lede={`${d.facility} · ${d.location}`} crumbs={crumbs}
+    image={photo} imageAlt={d.imageAlt}>
+    <ul class="tags tags-dark" aria-label={r.scopeTags}>{d.scope.map((s) => <li>{s}</li>)}</ul>
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap case-grid">
+      <div class="case-body">
+        {sections.map((s, i) => (
+          <section class="case-section" aria-labelledby={`case-${s.id}`} data-reveal>
+            <span class="tile-num">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h2 id={`case-${s.id}`}>{s.title}</h2>
+              {paragraphs(s.text).map((p) => <p>{p}</p>)}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <aside class="facts" aria-labelledby="facts-h">
+        <h2 id="facts-h" class="h-small">{r.facts}</h2>
+        <div class="facts-figure">
+          <span class="label">{r.keyFigure}</span>
+          <strong>{d.keyFigure}</strong>
+        </div>
+        <dl>
+          <div><dt>{r.location}</dt><dd>{d.location}</dd></div>
+          <div><dt>{r.facility}</dt><dd>{d.facility}</dd></div>
+          {industry && <div><dt>{r.industry}</dt><dd><a href={industryLink(lang, industry)}>{industry.data.title}</a></dd></div>}
+          {services.length > 0 && (
+            <div><dt>{r.servicesLabel}</dt><dd><ul>{services.map((s) => <li><a href={link(lang, 'services', s.slug)}>{s.data.title}</a></li>)}</ul></dd></div>
+          )}
+          {d.year && <div><dt>{r.year}</dt><dd>{d.year}</dd></div>}
+          {d.status && <div><dt>{r.status}</dt><dd>{r.statusValues[d.status]}</dd></div>}
+          {source && <div><dt>{r.source}</dt><dd><a href={source.url} rel="noopener" target="_blank">{source.label} <span aria-hidden="true">↗</span></a></dd></div>}
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  {more.length > 0 && (
+    <section class="section section-paper" aria-labelledby="more-h">
+      <div class="wrap">
+        <div class="section-head section-head-split" data-reveal>
+          <h2 id="more-h">{r.more}</h2>
+          <a class="link-arrow" href={link(lang, 'references')}>{t.allReferences} <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="ref-grid" data-reveal>{more.map((x) => <RefCard lang={lang} reference={x} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <ContactBand lang={lang} />
+</Base>

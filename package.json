@@ -1,8 +1,8 @@
 {
-  "name": "deotto-water-treatment",
+  "name": "deotto-lab-website",
   "private": true,
   "version": "0.1.0",
-  "description": "Website for Ivan Deotto, water treatment consultant (HR/EN).",
+  "description": "Website for Deotto Lab, water treatment consulting and commissioning for mission-critical cooling.",
   "type": "module",
   "scripts": {
     "dev": "astro dev",

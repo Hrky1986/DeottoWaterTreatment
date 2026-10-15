@@ -1,0 +1,96 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import PageHero from '../../../components/PageHero.astro';
+import RefCard from '../../../components/RefCard.astro';
+import { langs, ui, type Lang } from '../../../i18n/ui';
+import { getIndustries, getReferences, getServices, link, orgId } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of langs) for (const s of await getServices(lang)) paths.push({ params: { lang, slug: s.slug } });
+  return paths;
+}
+
+const { lang: l, slug } = Astro.params;
+const lang = l as Lang;
+const t = ui[lang];
+const services = await getServices(lang);
+const index = services.findIndex((s) => s.slug === slug);
+const service = services[index];
+const { Content } = await render(service);
+const related = (await getReferences(lang)).filter((r) => r.data.services.includes(slug!));
+const industryName = Object.fromEntries((await getIndustries(lang)).map((i) => [i.slug, i.data.title]));
+const others = services.filter((s) => s.slug !== slug);
+
+const crumbs = [
+  { label: t.nav.home, href: link(lang) },
+  { label: t.nav.services, href: link(lang, 'services') },
+  { label: service.data.title },
+];
+const serviceLd = {
+  '@type': 'Service',
+  name: service.data.title,
+  description: service.data.intro,
+  serviceType: service.data.title,
+  provider: { '@id': orgId(Astro.site!) },
+  areaServed: 'Europe',
+};
+---
+<Base lang={lang} title={`${service.data.title} – Deotto Lab`} description={service.data.description}
+  path={['services', slug!]} breadcrumbs={crumbs} jsonLd={[serviceLd]}>
+  <PageHero lang={lang} title={service.data.title} lede={service.data.intro} crumbs={crumbs}
+    eyebrow={t.services.counter(index + 1, services.length)}>
+    {service.data.standards.length > 0 && (
+      <ul class="badges badges-dark" aria-label={t.standardsLabel}>
+        {service.data.standards.map((b) => <li>{b}</li>)}
+      </ul>
+    )}
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap detail-grid">
+      <div data-reveal>
+        <h2 class="h-small">{t.services.included}</h2>
+        <ul class="ticks ticks-lg">{service.data.included.map((x) => <li>{x}</li>)}</ul>
+        <div class="prose"><Content /></div>
+      </div>
+      <aside class="panel" data-reveal>
+        <h2 class="h-small">{t.services.systems}</h2>
+        <ul class="sys-list">{service.data.systems.map((x) => <li>{x}</li>)}</ul>
+        {service.data.standards.length > 0 && (
+          <>
+            <h2 class="h-small">{t.standardsLabel}</h2>
+            <ul class="badges">{service.data.standards.map((b) => <li>{b}</li>)}</ul>
+          </>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section section-paper" aria-labelledby="related-h">
+      <div class="wrap">
+        <div class="section-head section-head-split" data-reveal>
+          <h2 id="related-h">{t.services.related}</h2>
+          <a class="link-arrow" href={link(lang, 'references')}>{t.allReferences} <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="ref-grid" data-reveal>
+          {related.map((r) => <RefCard lang={lang} reference={r} industryName={industryName[r.data.industry]} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section-tight" aria-labelledby="other-h">
+    <div class="wrap">
+      <h2 id="other-h" class="h-small">{t.services.other}</h2>
+      <ul class="chip-links">
+        {others.map((s) => <li><a href={link(lang, 'services', s.slug)}>{s.data.title}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ContactBand lang={lang} />
+</Base>

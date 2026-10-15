@@ -1,0 +1,82 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ContactBand from '../../../components/ContactBand.astro';
+import PageHero from '../../../components/PageHero.astro';
+import RefCard from '../../../components/RefCard.astro';
+import { ui, type Lang } from '../../../i18n/ui';
+import { getReferences, langPaths, link } from '../../../lib/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const t = ui[lang];
+const d = t.dataCenters;
+const refs = (await getReferences(lang)).filter((r) => r.data.industry === 'data-centers');
+const crumbs = [{ label: t.nav.home, href: link(lang) }, { label: t.nav.dataCenters }];
+---
+<Base lang={lang} title={d.title} description={d.description} path={['data-centers']} breadcrumbs={crumbs}>
+  <PageHero lang={lang} eyebrow={d.eyebrow} title={d.heading} lede={d.lede} crumbs={crumbs}>
+    <ul class="badges badges-dark" aria-label={t.standardsLabel}>
+      <li>CHW</li><li>SFN / DLC</li><li>BSRIA BG29/2021</li><li>ASHRAE</li>
+    </ul>
+  </PageHero>
+
+  <section class="section" aria-labelledby="why-h">
+    <div class="wrap split">
+      <div data-reveal>
+        <h2 id="why-h">{d.whyHeading}</h2>
+        <p class="lead-text">{d.whyText}</p>
+      </div>
+      <ul class="why-grid" data-reveal>
+        {d.why.map((w) => (
+          <li>
+            <h3>{w.title}</h3>
+            <p>{w.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-paper" aria-labelledby="stages-h">
+    <div class="wrap">
+      <div class="section-head" data-reveal><h2 id="stages-h">{d.stagesHeading}</h2></div>
+      <ol class="stages" data-reveal>
+        {d.stages.map((s) => (
+          <li class="stage">
+            <h3><a href={link(lang, 'services', s.service)}>{s.title}</a></h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="live-h">
+    <div class="wrap">
+      <div class="feature" data-reveal>
+        <div>
+          <p class="eyebrow">{d.liveEyebrow}</p>
+          <h2 id="live-h">{d.liveHeading}</h2>
+        </div>
+        <div>
+          <p class="lead-text">{d.liveText}</p>
+          <a class="link-arrow" href={link(lang, 'services', 'live-data-center-cleaning')}>{d.liveLink} <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-paper" aria-labelledby="dc-refs-h">
+    <div class="wrap">
+      <div class="section-head section-head-split" data-reveal>
+        <h2 id="dc-refs-h">{d.referencesHeading}</h2>
+        <a class="link-arrow" href={link(lang, 'references')}>{t.allReferences} <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="ref-grid" data-reveal>
+        {refs.map((r) => <RefCard lang={lang} reference={r} />)}
+      </div>
+    </div>
+  </section>
+
+  <ContactBand lang={lang} />
+</Base>

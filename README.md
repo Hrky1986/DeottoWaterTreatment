@@ -1,21 +1,30 @@
-# DeottoWaterTreatment
+# Deotto Lab website
 
-Single-page website for Ivan Deotto, water treatment consultant, in Croatian and English.
+Website for Deotto Lab (Zagreb, Croatia): water treatment consulting and commissioning for
+mission-critical cooling. It's built from the developer brief of 14 Oct 2026. English comes first,
+and the structure is ready for a Croatian version.
+
+## Sitemap
+
+| Page | URL | Content source |
+| --- | --- | --- |
+| Home | `/en/` | `src/i18n/ui.ts` (home) + collections |
+| Services + 6 detail pages | `/en/services/…` | `src/content/services/en/*.md` |
+| Data Centers | `/en/data-centers/` | `src/i18n/ui.ts` (dataCenters) |
+| Industries + 4 detail pages | `/en/industries/…` | `src/content/industries/en/*.md` |
+| References + 6 case pages | `/en/references/…` | `src/content/references/en/*.md` |
+| About | `/en/about/` | `src/content/pages/en/about.md` |
+| Contact (+ thank-you page) | `/en/contact/` | form → `functions/api/contact.js` |
+| Privacy and cookies | `/en/privacy/` | `src/content/pages/en/privacy.md` |
+
+Company details for the footer, the contact page and structured data are in `src/data/company.ts`.
 
 ## Stack
 
-- [Astro](https://astro.build) static build: plain HTML, no client framework. The only JavaScript is a small inline script for the problem finder tabs and the language switch.
-- Hand-written CSS (`src/styles/global.css`) with light and dark themes.
-- Self-hosted variable font (Archivo, via Fontsource), no third-party requests.
-- Cloudflare Pages Function (`functions/index.js`) picks the language for `/` from the visitor's IP country.
-
-## Language selection
-
-`/hr/` and `/en/` are separate static pages. When someone opens `/`:
-
-1. If they switched language before (cookie `lang`), they go to that language.
-2. Otherwise, on Cloudflare Pages, visitors from Croatia (`CF-IPCountry: HR`) go to `/hr/`, everyone else to `/en/`.
-3. On hosts without the function (local preview, GitHub Pages), `src/pages/index.astro` falls back to the browser's time zone (`Europe/Zagreb`) or language (`hr`).
+- [Astro](https://astro.build) static build with content collections (`src/content.config.ts`). There is no client framework, only small inline scripts for the menu, the reference filters, the contact form and the cookie notice.
+- Hand-written CSS (`src/styles/global.css`). Archivo variable font is self-hosted, and the CSS is inlined.
+- Cross-document view transitions for smooth page changes, and scroll reveals. Both are turned off when the visitor prefers reduced motion.
+- Cloudflare Pages Functions: `functions/index.js` redirects `/` to a language, and `functions/api/contact.js` handles the enquiry form.
 
 ## Develop
 
@@ -25,38 +34,77 @@ npm run dev      # http://localhost:4321
 npm run build    # output in dist/
 ```
 
-## Preview on GitHub Pages
+## Client permissions (references)
 
-Every push to `main` runs `.github/workflows/deploy-pages.yml` and publishes the site to
-https://hrky1986.github.io/DeottoWaterTreatment/. The workflow sets `SITE` and `BASE_PATH`
-so links work under the `/DeottoWaterTreatment/` subpath. GitHub Pages cannot run the
-IP-based redirect, so `/` uses the time zone / browser language fallback there.
+The brief says not to publish client names or logos until permission is confirmed. Each reference therefore has:
 
-One-time setup: repository Settings → Pages → Source: **GitHub Actions**.
+- `title`: a descriptive public title (e.g. "40 MW AI data center, Herøya"), always used for now;
+- `client`: the real name, published only when `showClient: true`;
+- `source`: the public source link, also shown only when `showClient: true` and a URL is filled in.
 
-## Deploy to Cloudflare Pages
+URLs (slugs) are descriptive too, so they never reveal a client.
 
-Connect the GitHub repository in the Cloudflare dashboard with:
+## Editing content (CMS)
 
-- Build command: `npm run build`
-- Build output directory: `dist`
+`/admin/` runs [Decap CMS](https://decapcms.org). It edits the Markdown in `src/content/` and commits it to GitHub, and every commit rebuilds the site. Clients can add references, services and industries and upload photos, which are compressed at build time.
 
-The `functions/` directory is deployed automatically.
+GitHub login needs a small OAuth proxy. One-time setup:
+
+1. Create a GitHub OAuth app (Settings → Developer settings → OAuth Apps).
+2. Deploy an OAuth proxy, e.g. [decap-proxy](https://github.com/sterlingwes/decap-proxy) on Cloudflare Workers, with the app's client ID and secret.
+3. Set `backend.base_url` in `public/admin/config.yml` to the proxy URL.
+4. Give the editor write access to the repository.
+
+## Contact form
+
+The form posts to `/api/contact` (Cloudflare Pages Function). It checks a honeypot field, the required fields and the GDPR consent, optionally verifies Cloudflare Turnstile, and sends the enquiry by email through [Resend](https://resend.com). With JavaScript it submits in-page. Without it, the visitor is redirected to `/en/contact/thanks/`.
+
+Set these in Cloudflare Pages → Settings → Environment variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Resend API key (verify the sending domain in Resend) |
+| `CONTACT_TO` | Recipient(s), comma-separated |
+| `CONTACT_FROM` | Sender, e.g. `Deotto Lab website <web@yourdomain>` |
+| `TURNSTILE_SECRET` | Optional spam check (server side) |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Optional spam check (build time; shows the widget) |
+
+On the GitHub Pages preview there is no server, so the form shows the error message with the email address.
+
+## Adding the Croatian version (phase 2)
+
+1. Add `'hr'` to `langs` in `src/i18n/ui.ts`, and add an `hr` block translated from `en`.
+2. Add `src/content/<collection>/hr/` files with the **same file names** as in `en/`.
+3. Add `hr` to `i18n.locales` in `public/admin/config.yml`, and to `LANGS` in `functions/index.js`. Visitors from Croatia then go to `/hr/` automatically.
+
+`hreflang` alternates and the sitemap pick up the new language on their own.
 
 ## SEO
 
-- Per-language `<title>`, description, canonical and `hreflang` links (`x-default` → English).
-- Open Graph / Twitter tags with a share image (`public/og-image.jpg`, 1200×630).
-- JSON-LD: `WebPage`, `ProfessionalService` (services as an offer catalog) and `FAQPage`.
-- `sitemap.xml` with language alternates and `robots.txt`, generated from `src/pages/`.
-- Fonts self-hosted with the main file preloaded; CSS inlined; no render-blocking requests.
+- A title and description for every page, with canonical URLs and clean URLs as in the brief.
+- JSON-LD: `ProfessionalService` (company), `WebPage`, `BreadcrumbList`, `Service` on service pages and `ItemList` on the services overview.
+- `sitemap.xml` and `robots.txt` are generated at build time. The share image is `public/og-image.jpg` (`node scripts/render-og.mjs`).
+- Target phrases (data center water treatment, liquid cooling flushing, CHW passivation, commissioning water treatment) appear in titles, descriptions and headings.
 
-After launch on the real domain, add the site to Google Search Console and Bing Webmaster Tools and submit `sitemap.xml`.
+## Deploy
 
-## Hero background
-
-`src/assets/water-ripples.jpg` is generated by `node scripts/render-water.mjs` (procedural, no photo licence needed). Edit the script to change the ripple position, colours or size.
+- **GitHub Pages preview**: every push to `main` runs `.github/workflows/deploy-pages.yml` (served under `/DeottoWaterTreatment/`).
+- **Cloudflare Pages (production)**: build command `npm run build`, output `dist`. The `functions/` directory is deployed automatically. Set the real domain in `astro.config.mjs`.
 
 ## Before launch
 
-All copy lives in `src/i18n/content.ts`. Lines marked `TODO` are placeholders: email, phone, service area and the domain in `astro.config.mjs`.
+Placeholders are marked `TODO` in the code. The client still needs to supply:
+
+- [ ] Logo files (SVG); `src/components/Logo.astro` and `public/favicon.svg` are placeholders
+- [ ] Approval of the proposed colours (navy, water cyan) and font (Archivo)
+- [ ] Domain and hosting access (`astro.config.mjs`, `public/admin/config.yml`)
+- [ ] Company details: address, phone, email, OIB, register, share capital, IBAN (`src/data/company.ts`)
+- [ ] Permission from each client to use their name and logo (`showClient`)
+- [ ] Year, status and source URL for each reference; sign-off on challenge/scope/result texts
+- [ ] Site photos for each reference, with permission to publish
+- [ ] About text: founding year, team, standards and certifications
+- [ ] References for power plants, iron manufacturing and commercial HVAC
+- [ ] CPC skid photos and spec (flow, filtration grade, size)
+- [ ] Water analysis offer: parameters, lab, accreditation
+- [ ] Which ASHRAE documents to cite
+- [ ] Legal review of the privacy policy; final sign-off on all English copy
