@@ -6,7 +6,7 @@ work has been done and how to get in touch.
 
 ## Structure
 
-- `/en/`: the page. Hero, what we do (six services), where, and a contact form.
+- `/en/`: the page. Hero, services, about us and a contact form, reached through the hamburger menu.
 - `/en/privacy/`: privacy notice, linked from the form and the footer.
 - `/`: redirects to `/en/`.
 

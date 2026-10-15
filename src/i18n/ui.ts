@@ -17,7 +17,17 @@ const en = {
       'Water treatment consulting, CPC flushing, passivation and commissioning for data center liquid cooling, to BSRIA BG29/2021 and ASHRAE.',
   },
   skip: 'Skip to content',
-  contactLink: 'Contact',
+
+  menu: {
+    open: 'Open menu',
+    close: 'Close menu',
+    label: 'Menu',
+    links: [
+      { id: 'services', label: 'Services' },
+      { id: 'about', label: 'About us' },
+      { id: 'contact', label: 'Contact' },
+    ],
+  },
 
   hero: {
     headline: ['Clean water,', 'quietly kept.'],
@@ -26,20 +36,24 @@ const en = {
     scroll: 'Scroll',
   },
 
-  work: {
-    heading: 'What we do',
+  // In project order, from the first drawing to years of operation.
+  services: {
+    heading: 'Services',
     items: [
-      { title: 'Consulting', note: 'from the first drawing' },
+      { title: 'Design & Engineering', note: 'systems built to stay clean' },
+      { title: 'Project consulting', note: 'independent, from the first drawing' },
       { title: 'CPC flushing', note: 'to BSRIA BG29/2021' },
       { title: 'Commissioning', note: 'passivation and handover' },
+      { title: 'Operations & Maintenance', note: 'treatment that lasts' },
       { title: 'Live cleaning', note: 'without downtime' },
       { title: 'Filtration skids', note: 'built in-house' },
       { title: 'Water analysis', note: 'what the eye can’t see' },
     ],
   },
 
-  where: {
-    heading: 'Where',
+  about: {
+    heading: 'About us',
+    text: 'An independent water treatment lab from Zagreb. We look after the water inside cooling systems, then step aside.',
     places: ['Sweden', 'Norway', 'France', 'Croatia'],
     note: 'AI factories and data centers up to 40 MW. Some still running while we worked.',
   },
