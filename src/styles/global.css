@@ -37,7 +37,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2 { margin: 0; font-weight: 300; line-height: 1.02; letter-spacing: -0.035em; text-wrap: balance; }
+h1, h2, h3 { margin: 0; font-weight: 300; line-height: 1.02; letter-spacing: -0.035em; text-wrap: balance; }
 em { font-style: normal; }
 p { margin: 0; text-wrap: pretty; }
 ol, ul { margin: 0; padding: 0; list-style: none; }
@@ -127,7 +127,7 @@ html.no-scroll { overflow: hidden; }
   padding: 7rem var(--gutter) 6rem;
 }
 .hero picture, .hero-water { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; }
-.hero-water { object-fit: cover; object-position: 70% 52%; opacity: 0.55; filter: saturate(0.7); animation: drift 40s ease-in-out infinite alternate; }
+.hero-water { object-fit: cover; object-position: 70% 52%; opacity: 0.5; will-change: transform; animation: drift 40s ease-in-out infinite alternate; }
 .hero::before {
   content: ''; position: absolute; inset: 0; z-index: -2;
   background:
@@ -154,10 +154,10 @@ html.no-scroll { overflow: hidden; }
 .hero h1 { font-size: clamp(3rem, 1.5rem + 6.5vw, 7.25rem); }
 .hero h1 em { color: var(--accent); }
 .hero-lede { margin: 2rem auto 2.75rem; max-width: 30rem; color: var(--mist); font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem); }
-.hero-inner > * { animation: surface 1.8s var(--ease) both; }
-.hero-inner > :nth-child(2) { animation-delay: 0.35s; }
-.hero-inner > :nth-child(3) { animation-delay: 0.6s; }
-@keyframes surface { from { opacity: 0; transform: translateY(18px); filter: blur(8px); } }
+.hero-inner > * { animation: surface 1.4s var(--ease) both; }
+.hero-inner > :nth-child(2) { animation-delay: 0.2s; }
+.hero-inner > :nth-child(3) { animation-delay: 0.4s; }
+@keyframes surface { from { opacity: 0; transform: translateY(18px); } }
 
 .scroll-cue { position: absolute; left: 50%; bottom: 2rem; width: 1px; height: 3.5rem; translate: -50% 0; background: var(--line); overflow: hidden; }
 .scroll-cue span { position: absolute; left: 0; top: -40%; width: 1px; height: 40%; background: var(--accent); animation: fall 2.6s var(--ease) infinite; }
@@ -173,10 +173,10 @@ html.no-scroll { overflow: hidden; }
 
 /* Things surface slowly as they scroll into view. A delayed fallback shows them anyway. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal] { transition: opacity 1.4s var(--ease), transform 1.4s var(--ease), filter 1.4s var(--ease); transition-delay: var(--d, 0ms); }
-  html.js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(26px); filter: blur(6px); animation: reveal-failsafe 0s 3s forwards; }
+  html.js [data-reveal] { transition: opacity 1.4s var(--ease), transform 1.4s var(--ease); transition-delay: var(--d, 0ms); }
+  html.js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(26px); animation: reveal-failsafe 0s 3s forwards; }
 }
-@keyframes reveal-failsafe { to { opacity: 1; transform: none; filter: none; } }
+@keyframes reveal-failsafe { to { opacity: 1; transform: none; } }
 
 /* What we do */
 .work li {

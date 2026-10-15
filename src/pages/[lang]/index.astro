@@ -34,8 +34,8 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       {t.services.items.map((w, i) => (
         <li data-reveal style={`--d: ${i * 60}ms`}>
           <span class="work-num">{String(i + 1).padStart(2, '0')}</span>
-          <span class="work-title">{w.title}</span>
-          <span class="work-note">{w.note}</span>
+          <h3 class="work-title">{w.title}</h3>
+          <p class="work-note">{w.note}</p>
         </li>
       ))}
     </ol>
@@ -98,7 +98,6 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       <template data-error>{c.error} <a href={`mailto:${company.email}`}>{company.email}</a>.</template>
     </form>
   </section>
-</Base>
 
 {turnstileKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
@@ -154,3 +153,4 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   }
 </script>
+</Base>

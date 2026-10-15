@@ -12,9 +12,11 @@ export const locales: Record<Lang, { og: string }> = {
 
 const en = {
   meta: {
-    title: 'Deotto Lab – Water treatment for mission-critical cooling',
+    // Title ≤ 60 characters and description ≤ 155, so search results don’t cut them off.
+    title: 'Deotto Lab – Water treatment for data center cooling',
     description:
-      'Design and engineering, project consulting, and operations and maintenance for the water in data center and industrial cooling systems.',
+      'Independent water treatment for data center and industrial cooling: design & engineering, project consulting, operations & maintenance. Zagreb, Croatia.',
+    ogAlt: 'Clean water, quietly kept. Deotto Lab',
   },
   skip: 'Skip to content',
 
@@ -48,7 +50,7 @@ const en = {
 
   about: {
     heading: 'About us',
-    text: 'An independent water treatment lab from Zagreb. We look after the water inside cooling systems, then step aside.',
+    text: 'An independent water treatment lab from Zagreb, Croatia. We look after the water inside data center and industrial cooling systems, then step aside.',
     places: ['Sweden', 'Norway', 'France', 'Croatia'],
     note: 'AI factories and data centers up to 40 MW. Some still running while we worked.',
   },
@@ -72,7 +74,8 @@ const en = {
   footer: { privacy: 'Privacy' },
 
   privacy: {
-    title: 'Privacy – Deotto Lab',
+    title: 'Privacy notice – Deotto Lab',
+    description: 'How Deotto Lab handles the personal data sent through this website, in line with the GDPR.',
     heading: 'Privacy',
     back: 'Back',
   },
