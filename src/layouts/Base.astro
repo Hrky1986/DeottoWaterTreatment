@@ -1,10 +1,10 @@
 ---
-import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/archivo';
 import '../styles/global.css';
-import fontLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import fontLatin from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url';
 import Logo from '../components/Logo.astro';
 import { company } from '../data/company';
-import { base, home, langs, locales, ui, type Lang } from '../i18n/ui';
+import { base, defaultLang, home, langs, locales, ui, type Lang } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
@@ -18,20 +18,55 @@ const { lang, title, description, path = '', noindex = false } = Astro.props;
 const t = ui[lang];
 const site = Astro.site!;
 const abs = (l: Lang) => new URL(`${home(l)}${path ? `${path}/` : ''}`, site).href;
+const root = new URL(base, site).href;
 const ogImage = new URL(`${base}og-image.jpg`, site).href;
 
+// Search engine verification codes, set at build time once Search Console / Bing Webmaster Tools are set up.
+const googleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const bingVerification = import.meta.env.PUBLIC_BING_SITE_VERIFICATION;
+
+// Structured data: the company, the website, this page, and the services on offer.
+const orgId = `${root}#organization`;
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
-  name: company.name,
-  legalName: company.legalName,
-  url: abs(lang),
-  image: ogImage,
-  email: company.email,
-  telephone: company.phone,
-  address: { '@type': 'PostalAddress', streetAddress: company.street, postalCode: company.postcode, addressLocality: company.city, addressCountry: company.countryCode },
-  areaServed: ['Sweden', 'Norway', 'France', 'Croatia'].map((name) => ({ '@type': 'Country', name })),
-  knowsAbout: ['Data center water treatment', 'Liquid cooling flushing', 'CHW passivation', 'Commissioning water treatment', 'BSRIA BG29/2021', 'ASHRAE'],
+  '@graph': [
+    {
+      '@type': ['Organization', 'ProfessionalService'],
+      '@id': orgId,
+      name: company.name,
+      legalName: company.legalName,
+      url: root,
+      logo: { '@type': 'ImageObject', url: new URL(`${base}icon-512.png`, site).href, width: 512, height: 512 },
+      image: ogImage,
+      description: t.meta.description,
+      email: company.email,
+      telephone: company.phone,
+      taxID: company.oib,
+      address: { '@type': 'PostalAddress', streetAddress: company.street, postalCode: company.postcode, addressLocality: company.city, addressCountry: company.countryCode },
+      areaServed: t.about.places.map((name) => ({ '@type': 'Country', name })),
+      knowsAbout: ['Water treatment', 'Data center cooling water', 'Industrial cooling water', 'Liquid cooling', 'BSRIA BG29/2021', 'ASHRAE'],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: t.services.heading,
+        itemListElement: t.services.items.map((s) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: s.title, description: `${s.title}: ${s.note}.`, provider: { '@id': orgId } },
+        })),
+      },
+    },
+    { '@type': 'WebSite', '@id': `${root}#website`, url: root, name: company.name, inLanguage: lang, publisher: { '@id': orgId } },
+    {
+      '@type': 'WebPage',
+      '@id': `${abs(lang)}#webpage`,
+      url: abs(lang),
+      name: title,
+      description,
+      inLanguage: lang,
+      isPartOf: { '@id': `${root}#website` },
+      about: { '@id': orgId },
+      primaryImageOfPage: { '@type': 'ImageObject', url: ogImage, width: 1200, height: 630 },
+    },
+  ],
 };
 ---
 <!doctype html>
@@ -41,9 +76,15 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={abs(lang)} />}
-    {!noindex && langs.length > 1 && langs.map((l) => <link rel="alternate" hreflang={l} href={abs(l)} />)}
+    {noindex
+      ? <meta name="robots" content="noindex, follow" />
+      : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
+    {!noindex && <link rel="canonical" href={abs(lang)} />}
+    {!noindex && langs.map((l) => <link rel="alternate" hreflang={l} href={abs(l)} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={abs(defaultLang)} />}
     <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
+    {bingVerification && <meta name="msvalidate.01" content={bingVerification} />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={company.name} />
@@ -51,14 +92,24 @@ const jsonLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={abs(lang)} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogAlt} />
     <meta property="og:locale" content={locales[lang].og} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t.meta.ogAlt} />
 
     <meta name="theme-color" content="#eef3f5" />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" href={`${base}favicon-32.png`} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} />
+    <link rel="manifest" href={`${base}site.webmanifest`} />
+    <link rel="sitemap" type="application/xml" href={`${base}sitemap.xml`} />
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>

@@ -6,7 +6,7 @@ work has been done and how to get in touch.
 
 ## Structure
 
-- `/en/`: the page. Hero, services, about us and a contact form, reached through the hamburger menu.
+- `/en/`: the page. Hero, services, references (no client names), about us and a contact form, reached through the hamburger menu.
 - `/en/privacy/`: privacy notice, linked from the form and the footer.
 - `/`: redirects to `/en/`.
 
@@ -43,6 +43,26 @@ Set these in Cloudflare Pages → Settings → Environment variables:
 
 There is no server on the GitHub Pages preview, so the form shows the error line with the email address.
 
+## SEO
+
+- **Tags:** a title of 60 characters or fewer and a description of 155 or fewer (`src/i18n/ui.ts`), canonical URL, hreflang, and a `robots` tag allowing large image previews.
+- **Share previews:** Open Graph and Twitter tags with `public/og-image.jpg` (`node scripts/render-og.mjs`).
+- **Structured data:** `Organization`/`ProfessionalService` with address, countries served and an `OfferCatalog` of the three services; also `WebSite` and `WebPage`.
+- **Headings:** one `h1`, an `h2` per section and an `h3` per service.
+- **Files:** `sitemap.xml` and `robots.txt` are generated at build time. There are PNG icons (`node scripts/render-icons.mjs`) and a web manifest.
+- **Speed:** CSS is inlined, one Latin font file (35 KB) is preloaded, and the hero image is served as AVIF/WebP. `public/_headers` caches build assets for a year on Cloudflare.
+- **Lighthouse (local build):** 100 for performance, accessibility, best practices and SEO, on both pages.
+
+### After launch on the real domain
+
+1. Set the domain in `astro.config.mjs` (`site`). Canonical URLs, the sitemap and structured data all use it.
+2. Add the site to [Google Search Console](https://search.google.com/search-console) and [Bing Webmaster Tools](https://www.bing.com/webmasters), using the HTML tag method. Put the codes in the build environment as `PUBLIC_GOOGLE_SITE_VERIFICATION` and `PUBLIC_BING_SITE_VERIFICATION`, rebuild, then verify.
+3. Submit `https://<domain>/sitemap.xml` in both tools.
+4. Check the structured data with Google's [Rich Results Test](https://search.google.com/test/rich-results).
+5. Fill in the real company details (`src/data/company.ts`). They appear in the structured data, and a real address helps local search.
+
+On the GitHub Pages preview, `robots.txt` sits under a subpath, where search engines ignore it. That is expected for a preview.
+
 ## Adding Croatian
 
 Add `'hr'` to `langs` in `src/i18n/ui.ts` with a translated `hr` block, and add `'hr'` to `LANGS` in `functions/index.js`.
@@ -51,6 +71,7 @@ Add `'hr'` to `langs` in `src/i18n/ui.ts` with a translated `hr` block, and add 
 
 - Hero water: `node scripts/render-water.mjs` → `src/assets/water-ripples.jpg` (procedural, no licence needed).
 - Share image: `node scripts/render-og.mjs` → `public/og-image.jpg`.
+- Icons: `node scripts/render-icons.mjs` → `public/*.png` (from `public/favicon.svg`).
 
 ## Deploy
 
