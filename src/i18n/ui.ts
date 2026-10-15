@@ -54,9 +54,8 @@ const en = {
     heading: 'References',
     items: [
       { title: 'AI/HPC Data Center', country: 'Norway', specs: ['12 MW IT', 'Direct liquid cooling', 'Racks up to 110 kW', 'N+1'] },
-      { title: 'AI Data Center', country: 'Norway', specs: ['40 MW IT', '21,300 m²', 'SFN flushing', 'Commissioning'] },
-      { title: 'AI Data Center', country: 'Norway', specs: ['40 MW IT', 'Consulting from design', 'Cleaning', 'Commissioning'] },
-      { title: 'AI Supercomputer', country: 'Sweden', specs: ['NVIDIA DGX SuperPOD (GB300)', 'Liquid cooled', 'Cleaning & passivation', 'SFN flushing'] },
+      { title: 'AI Data Centers', country: 'Norway', specs: ['2 sites', '40 MW IT each', 'Consulting from design', 'SFN flushing', 'Commissioning'] },
+      { title: 'AI Supercomputer', country: 'Sweden', specs: ['Liquid cooled', 'Cleaning & passivation', 'SFN flushing', 'Commissioning'] },
       { title: 'Colocation Data Center', country: 'France', specs: ['Live site', '99.999% uptime', 'Cleaning without downtime', 'Passivation'] },
       { title: 'Dairy, own water source', country: 'Croatia', specs: ['2 wells, 16.5 m and 21.5 m', 'Exploration & drilling', 'Water preparation'] },
     ],
